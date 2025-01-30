@@ -43,12 +43,36 @@ def outline(rect, color, weight):
   return outrect
 
 
+def pause(player: player_class.Player):
+  get_blocks_rect = pg.Rect(250, 400, 100, 50)
+
+  is_open = True
+  while is_open:
+    for event in pg.event.get():
+      if event.type == pg.QUIT:
+        quit()
+      elif event.type == pg.MOUSEBUTTONDOWN:
+        if get_blocks_rect.collidepoint(event.pos):
+          for row in player.world.blocks:
+            print(row)
+          continue
+        is_open = False
+
+    screen.blit(nums_font.render("Paused", False, BLACK), (250, 250))
+
+    outline(get_blocks_rect, BLACK, 2)
+    pg.draw.rect(screen, GREY, get_blocks_rect)
+
+    pg.display.update()
+
 
 def game_loop():
   grid = grid_class.Grid(10, 20, (30, 30), (100, -2))
   player = player_class.Player(grid, colors)
 
-  pg.time.set_timer(MOVEDOWN, 200)
+  pg.time.set_timer(MOVEDOWN, 100)
+
+  pause_rect = pg.Rect(550, 0, 50, 50)
 
   alive = True
   while alive:
@@ -62,12 +86,17 @@ def game_loop():
           player.right()
         if event.key == pg.K_LEFT:
           player.left()
+      if event.type == pg.MOUSEBUTTONDOWN:
+        if pause_rect.collidepoint(event.pos):
+          pause(player)
 
 
     screen.fill(GREY)
     player.draw_world(screen)
     grid.display(screen)
     player.draw_blocks(screen)
+    outline(pause_rect, BLACK, 2)
+    pg.draw.rect(screen, GREY, pause_rect)
 
     pg.display.flip()
 
