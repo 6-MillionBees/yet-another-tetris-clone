@@ -5,6 +5,7 @@
 import pygame as pg
 import grid_class
 import player_class
+import misc as m
 
 pg.init()
 
@@ -13,29 +14,9 @@ screen = pg.display.set_mode((600, 600))
 
 MOVEDOWN = pg.event.custom_type()
 
-title_font = pg.font.Font("fonts/highway-encounter.ttf", 50)
-small_title_font = pg.font.Font("fonts/highway-encounter.ttf", 25)
-nums_font = pg.font.Font("fonts/ragnagard.ttf", 50)
 
-GREY = (120, 120, 120)
-BLACK = (0, 0, 0)
-YELLOW = (254, 248, 76)
-BLUE = (81, 225, 252)
-RED = (233, 61, 30)
-GREEN = (121, 174, 61)
-ORANGE = (121, 174, 61)
-DEEP_BLUE = (39, 85, 214)
-PINK = (241, 110, 185)
 
-colors = {
-  "o": YELLOW,
-  "i": BLUE,
-  "s": RED,
-  "z": GREEN,
-  "l": ORANGE,
-  "j": DEEP_BLUE,
-  "t": PINK
-}
+
 
 def outline(rect, color, weight):
   outrect = pg.Rect(rect.x - weight, rect.y - weight, rect.width + weight * 2, rect.height + weight * 2)
@@ -58,17 +39,17 @@ def pause(player: player_class.Player):
           continue
         is_open = False
 
-    screen.blit(nums_font.render("Paused", False, BLACK), (250, 250))
+    screen.blit(m.nums_font.render("Paused", False, m.BLACK), (250, 250))
 
-    outline(get_blocks_rect, BLACK, 2)
-    pg.draw.rect(screen, GREY, get_blocks_rect)
+    outline(get_blocks_rect, m.BLACK, 2)
+    pg.draw.rect(screen, m.GREY, get_blocks_rect)
 
     pg.display.update()
 
 
 def game_loop():
   grid = grid_class.Grid(10, 20, (30, 30), (100, -2))
-  player = player_class.Player(grid, colors)
+  player = player_class.Player(grid, m.colors)
 
   pg.time.set_timer(MOVEDOWN, 100)
 
@@ -89,14 +70,16 @@ def game_loop():
       if event.type == pg.MOUSEBUTTONDOWN:
         if pause_rect.collidepoint(event.pos):
           pause(player)
+      if event.type == pg.K_UP:
+        player.r_rotate()
 
 
-    screen.fill(GREY)
+    screen.fill(m.GREY)
     player.draw_world(screen)
     grid.display(screen)
     player.draw_blocks(screen)
-    outline(pause_rect, BLACK, 2)
-    pg.draw.rect(screen, GREY, pause_rect)
+    outline(pause_rect, m.BLACK, 2)
+    pg.draw.rect(screen, m.GREY, pause_rect)
 
     pg.display.flip()
 
@@ -104,14 +87,14 @@ def game_loop():
 def main():
   running = True
 
-  start_text = small_title_font.render("start", False, DEEP_BLUE)
+  start_text = m.small_title_font.render("start", False, m.DEEP_BLUE)
   start_text_rect = start_text.get_rect()
   start_button = pg.Rect(0, 0, 200, 50)
   start_button.center = (300, 325)
   start_text_rect.center = (300, 325)
 
-  title = title_font.render("Tetris", False, DEEP_BLUE)
-  title_rect = title.get_rect()
+  title = m.title_font.render("Tetris", False, m.DEEP_BLUE)
+  title_rect: pg.Rect = title.get_rect()
   title_rect.center = (300, 150)
 
   while running:
@@ -122,11 +105,11 @@ def main():
       if event.type == pg.MOUSEBUTTONDOWN:
         game_loop()
 
-    screen.fill(GREY)
+    screen.fill(m.GREY)
     screen.blit(title, title_rect)
 
-    outline(start_button, BLACK, 2)
-    pg.draw.rect(screen, GREY, start_button)
+    outline(start_button, m.BLACK, 2)
+    pg.draw.rect(screen, m.GREY, start_button)
     screen.blit(start_text, start_text_rect)
 
     pg.display.flip()
