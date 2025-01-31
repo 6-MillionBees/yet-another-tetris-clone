@@ -51,7 +51,7 @@ def game_loop():
   grid = grid_class.Grid(10, 20, (30, 30), (100, -2))
   player = player_class.Player(grid, m.colors)
 
-  pg.time.set_timer(MOVEDOWN, 100)
+  pg.time.set_timer(MOVEDOWN, 1000)
 
   pause_rect = pg.Rect(550, 0, 50, 50)
 
@@ -67,11 +67,15 @@ def game_loop():
           player.right()
         if event.key == pg.K_LEFT:
           player.left()
+        if event.key == pg.K_UP:
+          player.r_rotate()
+        if event.key == pg.K_DOWN:
+          player.l_rotate()
+        if event.key == pg.K_SPACE:
+          player.fastdrop()
       if event.type == pg.MOUSEBUTTONDOWN:
         if pause_rect.collidepoint(event.pos):
           pause(player)
-      if event.type == pg.K_UP:
-        player.r_rotate()
 
 
     screen.fill(m.GREY)

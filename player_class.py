@@ -4,6 +4,7 @@ from random import randint
 from grid_class import Grid
 from world_class import World
 import misc as m
+from math import sin, cos
 
 class Player:
   def __init__(self, grid: Grid, scheme):
@@ -52,7 +53,8 @@ class Player:
 
       self.update_world()
       self.newblock()
-      break
+      return False
+    return True
 
 
   def update_world(self):
@@ -78,10 +80,7 @@ class Player:
         if column[0] != None:
           pg.draw.rect(surface, self.colorscheme[column[1]], column[0])
 
-    surface.blit(m.nums_font.render(str(self.score), False, m.GREEN), ())
-
-
-
+    surface.blit(m.nums_font.render(str(self.score), False, m.GREEN), (500, 400))
 
 
   def right(self):
@@ -101,6 +100,7 @@ class Player:
 
     self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + cordnate[1] * self.grid.sq_size[0] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
 
+
   def left(self):
     self.current_block.cords = [(cordnate[0] - 1, cordnate[1]) for cordnate in self.current_block.cords]
     self.current_block.center[0] -= 1
@@ -114,7 +114,7 @@ class Player:
       except IndexError:
         pass
       self.current_block.cords = [(cordnate[0] + 1, cordnate[1]) for cordnate in self.current_block.cords]
-      self.current_block.center += 1
+      self.current_block.center[0] += 1
 
       break
 
@@ -126,16 +126,43 @@ class Player:
   #   while is_open:
 
   def score_lines(self, lines):
-    num_lines = len(lines)
-    self.score += num_lines**2
+    self.score += lines**2
 
   def r_rotate(self):
+    new_cords = []
     for cord in self.current_block.cords:
-      x_diff = self.current_block.center[0] - cord[0]
-      y_diff = self.current_block.center[1] - cord[1]
-      cord[1] = self.current_block.center[1] - x_diff
-      cord[0] = self.current_block.center[0] - y_diff
+      x_diff = cord[0] - self.current_block.center[0]
+      y_diff = cord[1] - self.current_block.center[1]
+
+      new_cord = (x_diff * cos(90) - y_diff * sin(90), x_diff * sin(90) + y_diff * cos(90))
+      new_cords.append(new_cord)
+
+    for cord in new_cords:
+      try:
+        if cord[0] < 0:
+          raise IndexError
+        if not self.world.get_block(cord)[0]:
+          continue
+      except IndexError:
+        pass
+
+
+
+  def l_rotate(self):
+    print(self.current_block.center)
+    print(self.current_block.cords)
+    num = 0
+    for cord in self.current_block.cords:
+      x_diff = cord[0] - self.current_block.center[0]
+      y_diff = cord[1] - self.current_block.center[1]
+      self.current_block.cords[num] = (self.current_block.center[0] + y_diff, self.current_block.center[1] + x_diff)
+      num += 1
     self.update_rects()
 
   def update_rects(self):
     self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + cordnate[1] * self.grid.sq_size[0] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
+
+  def fastdrop(self):
+    going = True
+    while going:
+      going = self.movedown()

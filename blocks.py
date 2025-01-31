@@ -30,7 +30,7 @@ class s_Block(Block):
     self.cords = [(0, 1), (1, 1), (1, 0), (2, 0)]
     self.type = "s"
     self.rotation = 0
-    self.center = []
+    self.center = [1, 0]
 
 
 class z_Block(Block):
@@ -38,12 +38,12 @@ class z_Block(Block):
     self.cords = [(0, 0), (1, 0), (1, 1), (2, 1)]
     self.type = "z"
     self.rotation = 0
-    self.center = []
+    self.center = [1, 0]
 
 
 class l_Block(Block):
   def __init__(self):
-    self.cords = [(0, 1), (1, 1), (1, 2), (0, 2)]
+    self.cords = [(0, 1), (1, 1), (2, 1), (2, 0)]
     self.type = "l"
     self.rotation = 0
     self.center = [1, 1]
