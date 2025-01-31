@@ -114,7 +114,7 @@ class Player:
       except IndexError:
         pass
       self.current_block.cords = [[cordnate[0] + 1, cordnate[1]] for cordnate in self.current_block.cords]
-      self.current_block.center += 1
+      self.current_block.center[0] += 1
 
       break
 
@@ -126,7 +126,7 @@ class Player:
   #   while is_open:
 
   def score_lines(self, lines):
-    num_lines = len(lines)
+    num_lines = lines
     self.score += num_lines**2
 
   def r_rotate(self):
