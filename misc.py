@@ -3,7 +3,7 @@ pg.init()
 
 title_font = pg.font.Font("fonts/highway-encounter.ttf", 50)
 small_title_font = pg.font.Font("fonts/highway-encounter.ttf", 25)
-nums_font = pg.font.Font("fonts/ragnagard.ttf", 50)
+nums_font = pg.font.Font("fonts/ragnagard.ttf", 20)
 
 GREY = (120, 120, 120)
 BLACK = (0, 0, 0)

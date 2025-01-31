@@ -78,14 +78,14 @@ class Player:
         if column[0] != None:
           pg.draw.rect(surface, self.colorscheme[column[1]], column[0])
 
-    surface.blit(m.nums_font.render(str(self.score), False, m.GREEN), ())
+    surface.blit(m.nums_font.render(str(self.score), False, m.GREEN), (550, 400))
 
 
 
 
 
   def right(self):
-    self.current_block.cords = [(cordnate[0] + 1, cordnate[1]) for cordnate in self.current_block.cords]
+    self.current_block.cords = [[cordnate[0] + 1, cordnate[1]] for cordnate in self.current_block.cords]
     self.current_block.center[0] += 1
 
     for cord in self.current_block.cords:
@@ -94,7 +94,7 @@ class Player:
           continue
       except IndexError:
         pass
-      self.current_block.cords = [(cordnate[0] - 1, cordnate[1]) for cordnate in self.current_block.cords]
+      self.current_block.cords = [[cordnate[0] - 1, cordnate[1]] for cordnate in self.current_block.cords]
       self.current_block.center[0] -= 1
 
       break
@@ -102,7 +102,7 @@ class Player:
     self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + cordnate[1] * self.grid.sq_size[0] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
 
   def left(self):
-    self.current_block.cords = [(cordnate[0] - 1, cordnate[1]) for cordnate in self.current_block.cords]
+    self.current_block.cords = [[cordnate[0] - 1, cordnate[1]] for cordnate in self.current_block.cords]
     self.current_block.center[0] -= 1
 
     for cord in self.current_block.cords:
@@ -113,7 +113,7 @@ class Player:
           continue
       except IndexError:
         pass
-      self.current_block.cords = [(cordnate[0] + 1, cordnate[1]) for cordnate in self.current_block.cords]
+      self.current_block.cords = [[cordnate[0] + 1, cordnate[1]] for cordnate in self.current_block.cords]
       self.current_block.center += 1
 
       break
@@ -130,11 +130,7 @@ class Player:
     self.score += num_lines**2
 
   def r_rotate(self):
-    for cord in self.current_block.cords:
-      x_diff = self.current_block.center[0] - cord[0]
-      y_diff = self.current_block.center[1] - cord[1]
-      cord[1] = self.current_block.center[1] - x_diff
-      cord[0] = self.current_block.center[0] - y_diff
+    self.current_block.r_rotate(self.world)
     self.update_rects()
 
   def update_rects(self):
