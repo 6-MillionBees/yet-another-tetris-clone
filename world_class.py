@@ -2,7 +2,7 @@ from grid_class import Grid
 
 class World:
   def __init__(self, size: tuple):
-    self.blocks = [[[None, None] for column in range(size[0])] for row in range(size[1])]
+    self.blocks = [[[None, None] for column in range(size[0])] for row in range(size[1] + 2)]
 
   def get_block(self, cords: tuple) -> list:
     return self.blocks[cords[1]][cords[0]]

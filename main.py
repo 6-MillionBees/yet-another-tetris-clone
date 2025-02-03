@@ -16,7 +16,11 @@ MOVEDOWN = pg.event.custom_type()
 
 
 def pause(player: player_class.Player):
-  unpause_rect = pg.Rect(250, 400, 100, 5)
+  unpause_rect = pg.Rect(200, 400, 200, 50)
+  pause_text = m.nums_font.render("Paused", False, m.BLACK)
+  pause_text_rect = pause_text.get_rect()
+  pause_text_rect.center = (300, 250)
+
 
   is_open = True
   while is_open:
@@ -24,11 +28,16 @@ def pause(player: player_class.Player):
       if event.type == pg.QUIT:
         pg.quit()
         quit()
+      if event.type == pg.KEYDOWN:
+        if event.key == pg.K_ESCAPE:
+          is_open = False
       elif event.type == pg.MOUSEBUTTONDOWN:
         if unpause_rect.collidepoint(event.pos):
           is_open = False
 
-    screen.blit(m.nums_font.render("Paused", False, m.BLACK), (250, 250))
+    screen.fill(m.GREY)
+
+    screen.blit(pause_text, pause_text_rect)
 
     m.outline(unpause_rect, m.BLACK, 2, screen)
     pg.draw.rect(screen, m.GREY, unpause_rect)
@@ -76,8 +85,8 @@ def game_loop():
 
 
     screen.fill(m.GREY)
-    player.draw_world()
     grid.display(screen)
+    player.draw_world()
     player.draw_blocks()
     m.outline(pause_rect, m.BLACK, 2, screen)
     pg.draw.rect(screen, m.GREY, pause_rect)

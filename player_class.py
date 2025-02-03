@@ -5,33 +5,33 @@ from grid_class import Grid
 from world_class import World
 import misc as m
 
-mini_blocks = {
+mini_blocks: dict[str, list[pg.Rect]] = {
   "": [],
-  "o": [pg.Rect(35, 100 , 30, 30)],
-  "i": [pg.Rect(45, 85, 10, 40)],
+  "o": [pg.Rect(10, 10 , 30, 30)],
+  "i": [pg.Rect(20, 5, 10, 40)],
   "s": [
-    pg.Rect(31.25, 104.5, 12.5, 12.5),
-    pg.Rect(43.75, 104.5, 12.5, 12.5),
-    pg.Rect(43.75, 92.5, 12.5, 12.5),
-    pg.Rect(55, 92.5, 12.5, 12.5)
+    pg.Rect(6, 24, 12, 12),
+    pg.Rect(18, 24, 12, 12),
+    pg.Rect(18, 12, 12, 12),
+    pg.Rect(30, 12, 12, 12)
     ],
   "z": [
-    pg.Rect(31.25, 92.5, 12.5, 12.5),
-    pg.Rect(43.75, 92.5, 12.5, 12.5),
-    pg.Rect(43.75, 104.5, 12.5, 12.5),
-    pg.Rect(55, 104.5, 12.5, 12.5)
+    pg.Rect(6, 12, 12, 12),
+    pg.Rect(18, 12, 12, 12),
+    pg.Rect(18, 24, 12, 12),
+    pg.Rect(30, 24, 12, 12)
   ],
   "l": [
-    pg.Rect(38, 87, 12, 36),
-    pg.Rect(50, 111, 12, 12)
+    pg.Rect(13, 7, 12, 36),
+    pg.Rect(25, 31, 12, 12)
   ],
   "j": [
-    pg.Rect(50, 87, 12, 36),
-    pg.Rect(38, 111, 12, 12)
+    pg.Rect(25, 7, 12, 36),
+    pg.Rect(13, 31, 12, 12)
   ],
   "t": [
-    pg.Rect(31, 92, 36, 12),
-    pg.Rect(43, 104, 12, 12)
+    pg.Rect(6, 12, 36, 12),
+    pg.Rect(18, 24, 12, 12)
   ]
 }
 
@@ -51,20 +51,32 @@ class Player:
     self.colorscheme = scheme
 
     self.grabbag: list[Block] = [o_Block(), i_Block(), s_Block(), z_Block(), l_Block(), j_Block(), t_Block()]
+    self.nextblock = None
+    self.setup()
     self.newblock()
 
+    self.nextblock_rect = pg.Rect(25, 10, 50, 50)
     self.heldblock_rect = pg.Rect(25, 80, 50, 50)
 
-  def newblock(self):
-    x = randint(0, len(self.grabbag) - 1)
-    self.current_block = self.grabbag[x]
+  def setup(self):
+    random_block = randint(0, len(self.grabbag) - 1)
+    self.nextblock = self.grabbag[random_block]
 
-    del self.grabbag[x]
+    del self.grabbag[random_block]
+
+
+  def newblock(self):
+    self.current_block = self.nextblock
+
+    random_block = randint(0, len(self.grabbag) - 1)
+    self.nextblock = self.grabbag[random_block]
+
+    del self.grabbag[random_block]
 
     if not self.grabbag:
       self.grabbag = [o_Block(), i_Block(), s_Block(), z_Block(), l_Block(), j_Block(), t_Block()]
 
-    self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0], self.grid.pos[1] + cordnate[1] * self.grid.sq_size[1]), self.grid.sq_size) for cordnate in self.current_block.cords]
+    self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + (cordnate[1] - 2) * self.grid.sq_size[1] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
     for cord in self.current_block.cords:
       if not self.world.get_block(cord)[0]:
         continue
@@ -122,11 +134,23 @@ class Player:
     m.outline(self.heldblock_rect, m.BLACK, 2, self.surface)
     pg.draw.rect(self.surface, m.GREY, self.heldblock_rect)
 
+    m.outline(self.nextblock_rect, m.BLACK, 2, self.surface)
+    pg.draw.rect(self.surface, m.GREY, self.nextblock_rect)
+
     try:
       for block in mini_blocks[self.heldblock.type]:
-        pg.draw.rect(self.surface, self.colorscheme[self.heldblock.type], block)
+        temp_block = pg.Rect(block.x, block.y, block.width, block.height)
+        temp_block.x += 25
+        temp_block.y += 80
+        pg.draw.rect(self.surface, self.colorscheme[self.heldblock.type], temp_block)
     except AttributeError:
       pass
+
+    for block in mini_blocks[self.nextblock.type]:
+      temp_block = pg.Rect(block.x, block.y, block.width, block.height)
+      temp_block.x += 25
+      temp_block.y += 10
+      pg.draw.rect(self.surface, self.colorscheme[self.nextblock.type], temp_block)
 
 
 
@@ -146,7 +170,7 @@ class Player:
 
       break
 
-    self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + cordnate[1] * self.grid.sq_size[0] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
+    self.update_rects()
 
 
   def left(self):
@@ -234,7 +258,7 @@ class Player:
     self.update_rects()
 
   def update_rects(self):
-    self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + cordnate[1] * self.grid.sq_size[0] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
+    self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + (cordnate[1] - 2) * self.grid.sq_size[0] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
 
   def fastdrop(self):
     going = True
