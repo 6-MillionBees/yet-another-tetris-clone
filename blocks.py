@@ -15,12 +15,37 @@ class Block:
     old_cords = []
     for cord in self.cords:
       old_cords.append(cord)
-      x = cord[1]
-      y = -cord[0]
-      self.cords[self.cords.index(cord)] = [x, y]
+      relative_x = cord[0] - self.center[0]
+      relative_y = cord[1] - self.center[1]
+      x = -relative_y
+      y = relative_x
+      self.cords[self.cords.index(cord)] = [x + self.center[0], y + self.center[1]]
 
     for cord in self.cords:
       try:
+        if cord[0] < 0:
+          raise IndexError
+        if not world.get_block(cord)[0]:
+          continue
+      except IndexError:
+        pass
+
+      self.cords = old_cords
+
+  def l_rotate(self, world: World):
+    old_cords = []
+    for cord in self.cords:
+      old_cords.append(cord)
+      relative_x = cord[0] - self.center[0]
+      relative_y = cord[1] - self.center[1]
+      x = relative_y
+      y = -relative_x
+      self.cords[self.cords.index(cord)] = [x + self.center[0], y + self.center[1]]
+
+    for cord in self.cords:
+      try:
+        if cord[0] < 0:
+          raise IndexError
         if not world.get_block(cord)[0]:
           continue
       except IndexError:
@@ -30,34 +55,48 @@ class Block:
 
 
 
+
 class o_Block(Block):
   def __init__(self):
     Block.__init__(
       self,
-      [[0, 0], [1, 0], [1, 1], [0, 1]],
+      [[5, 0], [6, 0], [6, 1], [5, 1]],
       "o",
-      [1, 1]
+      [6, 1]
     )
+
+  def reset_pos(self):
+    self.__init__()
+    return self
 
 
 class i_Block(Block):
   def __init__(self):
     Block.__init__(
       self,
-      [[0, 0], [0, 1], [0, 2], [0, 3]],
+      [[3, 0], [4, 0], [5, 0], [6, 0]],
       "i",
-      [1, 2]
+      [4, 0]
     )
+
+  def reset_pos(self):
+    self.__init__()
+    return self
+
 
 
 class s_Block(Block):
   def __init__(self):
     Block.__init__(
       self,
-      [[0, 1], [1, 1], [1, 0], [2, 0]],
+      [[4, 1], [5, 1], [5, 0], [6, 0]],
       "s",
-      [1, 0]
+      [5, 0]
     )
+
+  def reset_pos(self):
+    self.__init__()
+    return self
 
 
 
@@ -65,36 +104,52 @@ class z_Block(Block):
   def __init__(self):
     Block.__init__(
       self,
-      [[0, 0], [1, 0], [1, 1], [2, 1]],
+      [[4, 0], [5, 0], [5, 1], [6, 1]],
       "z",
-      [1, 0]
+      [5, 0]
     )
+
+  def reset_pos(self):
+    self.__init__()
+    return self
 
 
 class l_Block(Block):
   def __init__(self):
     Block.__init__(
       self,
-      [[0, 1], [1, 1], [2, 1], [2, 0]],
+      [[4, 1], [5, 1], [6, 1], [6, 0]],
       "l",
-      [1, 1]
+      [5, 1]
     )
+
+  def reset_pos(self):
+    self.__init__()
+    return self
 
 
 class j_Block(Block):
   def __init__(self):
     Block.__init__(
       self,
-      [[0, 0], [0, 1], [1, 1], [2, 1]],
+      [[4, 0], [4, 1], [5, 1], [6, 1]],
       "j",
-      [1, 1]
+      [5, 1]
     )
+
+  def reset_pos(self):
+    self.__init__()
+    return self
 
 class t_Block(Block):
   def __init__(self):
     Block.__init__(
       self,
-      [[0, 1], [1, 0], [1, 1], [2, 1]],
+      [[4, 1], [5, 0], [5, 1], [6, 1]],
       "t",
-      [1, 1]
+      [5, 1]
     )
+
+  def reset_pos(self):
+    self.__init__()
+    return self
