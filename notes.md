@@ -1,39 +1,12 @@
+
+
 ## Tetris To-Do
 
-### 1. Be able to see the next piece
+### 1. ) Line Clear effects
 
-This is a bit more complicated than the hold piece cube (but not by much).\
-You need to change the rectangles to be relative to the cube
-which will probably look like this:
-```Python
-rects = [pg.Rect(num, num, 12, 12), pg.Rect(num, num, 12, 12)]
 
-for rect in rects:
-  rect.x += box.x
-  rect.y += box.y
-```
 
-You then have to change how Player.newblock() works.\
-Instead of grabing a block directly from the blocks list you need a nextblock variable that it will take from.
-
-```Python
-self.current_block = self.nextblock
-
-self.nextblock = random_block
-```
-
-To let this work nextblock has to already have a block we can do this by creating a block_setup() method to define nextblock before newblock() is used.\
-This is what the Player.block_setup() method would look like:
-
-```Python
-def block_setup(self):
-  x = randint()
-  self.nextblock = self.blocks[x]
-  del self.blocks[x]
-  return
-```
-
-### 2. Particles!!!
+<!-- ### 2. Particles!!!
 
 I can actually work on this now bc it has nothing to do with the changes made on the 1/31/25 (yesterday at the moment) but I'd like to make some sudo code before getting into this complicated of a topic
 
@@ -153,4 +126,4 @@ file.write(json_object)
 ```
 
 #### Reading
-
+ -->

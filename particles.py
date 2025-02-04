@@ -26,3 +26,8 @@ class rect_Part(Particle):
 
   def update(self):
     pass
+
+
+class line_clear_effect(Particle):
+  def __init__(self, lines: list[int]):
+    self.rects = []
