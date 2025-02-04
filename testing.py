@@ -1,27 +1,11 @@
-import json
+my_list = [10, 9, 8, 3]
+my_list.sort()
 
-highscores = [
-  {
-    "name": "BAD",
-    "score": 1004
-  },
-  {
-    "name": "GOO",
-    "score": 2000
-  },
-  {
-    "name": "ASS",
-    "score": 2
-  }
-]
 
-highscores.sort(key= lambda dic: dic["score"], reverse= True)
-file = open("highscores.json", "a")
+my_list_grouped = [[]]
+for item in my_list:
 
-file.write("{\n\"scores\": [\n")
 
-for score in highscores:
-  json_object = json.dumps(score, indent= 2)
-  file.write(json_object)
 
-file.write("\n]\n}")
+
+print(my_list)
