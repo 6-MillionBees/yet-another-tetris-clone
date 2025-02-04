@@ -1,11 +1,14 @@
-my_list = [10, 9, 8, 3]
-my_list.sort()
+class Thingy:
+  def __init__(self):
+    self.num = 0
+
+  def update(self):
+    self.num += 1
+    print(self.num)
+    if self.num > 10:
 
 
-my_list_grouped = [[]]
-for item in my_list:
+thang = Thingy()
 
-
-
-
-print(my_list)
+while True:
+  thang.update()

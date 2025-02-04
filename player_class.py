@@ -3,6 +3,7 @@ from blocks import *
 from random import randint
 from grid_class import Grid
 from world_class import World
+import particles as part
 import misc as m
 
 mini_blocks: dict[str, list[pg.Rect]] = {
@@ -38,6 +39,8 @@ mini_blocks: dict[str, list[pg.Rect]] = {
 
 class Player:
   def __init__(self, grid: Grid, scheme: dict, surface: pg.Surface):
+    self.particles: list[part.Particle] = []
+    self.level = 0
     self.lines_cleared: int = 0
     self.current_block: Block = None
     self.isheld: bool = False
@@ -247,8 +250,8 @@ class Player:
 
 
   def score_lines(self, lines):
-    num_lines = lines
-    self.score += num_lines**2
+    self.lines_cleared += lines
+    self.score += lines**2
 
   def r_rotate(self):
     self.current_block.r_rotate(self.world)
@@ -265,3 +268,4 @@ class Player:
     going = True
     while going:
       going = self.movedown()
+    self.score += 10 * self.level
