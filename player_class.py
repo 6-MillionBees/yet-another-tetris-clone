@@ -38,8 +38,9 @@ mini_blocks: dict[str, list[pg.Rect]] = {
 
 class Player:
   def __init__(self, grid: Grid, scheme: dict, surface: pg.Surface):
+    self.lines_cleared: int = 0
     self.current_block: Block = None
-    self.isheld = False
+    self.isheld: bool = False
     self.heldblock: Block = None
     self.grid: Grid = grid
     self.score: int = 0
