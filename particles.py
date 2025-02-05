@@ -30,4 +30,4 @@ class rect_Part(Particle):
 
 class line_clear_effect(Particle):
   def __init__(self, lines: list[int]):
-    self.rects = []
+    self.lines = lines

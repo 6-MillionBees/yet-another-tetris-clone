@@ -1,27 +1,14 @@
-import json
+class Thingy:
+  def __init__(self):
+    self.num = 0
 
-highscores = [
-  {
-    "name": "BAD",
-    "score": 1004
-  },
-  {
-    "name": "GOO",
-    "score": 2000
-  },
-  {
-    "name": "ASS",
-    "score": 2
-  }
-]
+  def update(self):
+    self.num += 1
+    print(self.num)
+    if self.num > 10:
 
-highscores.sort(key= lambda dic: dic["score"], reverse= True)
-file = open("highscores.json", "a")
 
-file.write("{\n\"scores\": [\n")
+thang = Thingy()
 
-for score in highscores:
-  json_object = json.dumps(score, indent= 2)
-  file.write(json_object)
-
-file.write("\n]\n}")
+while True:
+  thang.update()

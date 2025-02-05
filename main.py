@@ -83,6 +83,8 @@ def game_loop():
         if pause_rect.collidepoint(event.pos):
           pause(player)
 
+    for particle in player.particles:
+      particle.update()
 
     screen.fill(m.GREY)
     grid.display(screen)
