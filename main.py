@@ -13,6 +13,8 @@ clock = pg.time.Clock()
 screen = pg.display.set_mode((600, 600))
 
 MOVEDOWN = pg.event.custom_type()
+PARTICLE_UPDATE = pg.event.custom_type()
+
 
 
 def pause(player: player_class.Player):
@@ -43,13 +45,15 @@ def pause(player: player_class.Player):
     pg.draw.rect(screen, m.GREY, unpause_rect)
 
     pg.display.update()
+    clock.tick(m.FPS)
 
 
 def game_loop():
   grid = grid_class.Grid(10, 20, (30, 30), (100, -2))
   player = player_class.Player(grid, m.colors, screen)
 
-  pg.time.set_timer(MOVEDOWN, 1000)
+  pg.time.set_timer(MOVEDOWN, player.speed, 1)
+  pg.time.set_timer(PARTICLE_UPDATE, int(1000 / m.FPS))
 
   pause_rect = pg.Rect(550, 0, 50, 50)
 
@@ -59,12 +63,16 @@ def game_loop():
       if event.type == pg.QUIT:
         pg.quit()
         quit()
-      if event.type == MOVEDOWN:
+      if event.type == PARTICLE_UPDATE:
+        for particle in player.particles:
+          particle.update()
+      elif event.type == MOVEDOWN:
         player.movedown()
         if not player.alive:
           player.game_over()
           alive = False
-      if event.type == pg.KEYDOWN:
+        pg.time.set_timer(MOVEDOWN, player.speed, 1)
+      elif event.type == pg.KEYDOWN:
         if event.key == pg.K_ESCAPE:
           pause(player)
         if event.key == pg.K_RIGHT:
@@ -83,17 +91,27 @@ def game_loop():
         if pause_rect.collidepoint(event.pos):
           pause(player)
 
-    for particle in player.particles:
-      particle.update()
-
+    # Background
     screen.fill(m.GREY)
+
+    # Draw grid
     grid.display(screen)
+
+    # Draw game
     player.draw_world()
     player.draw_blocks()
+
+    # Pause rects <3
     m.outline(pause_rect, m.BLACK, 2, screen)
     pg.draw.rect(screen, m.GREY, pause_rect)
 
+    # Draw particles
+    # for particle in player.particles:
+    #   particle.display()
+
     pg.display.flip()
+
+    clock.tick(m.FPS)
 
 
 def main():
@@ -126,9 +144,9 @@ def main():
 
     pg.display.flip()
 
-    clock.tick(60)
-  pg.quit()
+    clock.tick(m.FPS)
 
 
 if __name__ == "__main__":
   main()
+  pg.quit()

@@ -6,56 +6,36 @@ from world_class import World
 import particles as part
 import misc as m
 
-mini_blocks: dict[str, list[pg.Rect]] = {
-  "": [],
-  "o": [pg.Rect(10, 10 , 30, 30)],
-  "i": [pg.Rect(20, 5, 10, 40)],
-  "s": [
-    pg.Rect(6, 24, 12, 12),
-    pg.Rect(18, 24, 12, 12),
-    pg.Rect(18, 12, 12, 12),
-    pg.Rect(30, 12, 12, 12)
-    ],
-  "z": [
-    pg.Rect(6, 12, 12, 12),
-    pg.Rect(18, 12, 12, 12),
-    pg.Rect(18, 24, 12, 12),
-    pg.Rect(30, 24, 12, 12)
-  ],
-  "l": [
-    pg.Rect(13, 7, 12, 36),
-    pg.Rect(25, 31, 12, 12)
-  ],
-  "j": [
-    pg.Rect(25, 7, 12, 36),
-    pg.Rect(13, 31, 12, 12)
-  ],
-  "t": [
-    pg.Rect(6, 12, 36, 12),
-    pg.Rect(18, 24, 12, 12)
-  ]
-}
+
 
 
 class Player:
   def __init__(self, grid: Grid, scheme: dict, surface: pg.Surface):
     self.particles: list[part.Particle] = []
+
+    # Speed & lines
     self.level = 0
+    self.max_lines = 10
     self.lines_cleared: int = 0
+    self.speed = int(1000 / m.FPS * m.SPEEDS[self.level])
+
+    # Misc things
+    self.alive: bool = True
+    self.surface: pg.Surface = surface
+
+    self.world = World((grid.columns, grid.rows))
+    self.colorscheme = scheme[0]
+
+    # Blocks
     self.current_block: Block = None
     self.isheld: bool = False
     self.heldblock: Block = None
     self.grid: Grid = grid
     self.score: int = 0
     self.rects: list[pg.Rect] = []
-    self.alive: bool = True
-    self.surface: pg.Surface = surface
-
-    self.world = World((grid.columns, grid.rows))
-    self.colorscheme = scheme
-
     self.grabbag: list[Block] = [o_Block(), i_Block(), s_Block(), z_Block(), l_Block(), j_Block(), t_Block()]
     self.nextblock = None
+
     self.setup()
     self.newblock()
 
@@ -117,9 +97,13 @@ class Player:
       num += 1
 
     cleared_lines = self.world.check_lines(self.grid)
-    if cleared_lines == 0:
+    if not cleared_lines:
       return
-    self.score_lines(cleared_lines)
+
+    # for line in cleared_lines:
+    #   self.particles.append(part.Line_Clear_Particle(line))
+
+    self.score_lines(len(cleared_lines))
 
 
   def draw_blocks(self):
@@ -142,7 +126,7 @@ class Player:
     pg.draw.rect(self.surface, m.GREY, self.nextblock_rect)
 
     try:
-      for block in mini_blocks[self.heldblock.type]:
+      for block in m.mini_blocks[self.heldblock.type]:
         temp_block = pg.Rect(block.x, block.y, block.width, block.height)
         temp_block.x += 25
         temp_block.y += 80
@@ -150,7 +134,7 @@ class Player:
     except AttributeError:
       pass
 
-    for block in mini_blocks[self.nextblock.type]:
+    for block in m.mini_blocks[self.nextblock.type]:
       temp_block = pg.Rect(block.x, block.y, block.width, block.height)
       temp_block.x += 25
       temp_block.y += 10
@@ -252,6 +236,8 @@ class Player:
   def score_lines(self, lines):
     self.lines_cleared += lines
     self.score += lines**2
+    if self.lines_cleared >= self.max_lines:
+      self.level_up()
 
   def r_rotate(self):
     self.current_block.r_rotate(self.world)
@@ -269,3 +255,15 @@ class Player:
     while going:
       going = self.movedown()
     self.score += 10 * self.level
+
+
+  def level_up(self):
+    self.level += 1
+    self.colorscheme = m.colors[self.level]
+    self.max_lines += (self.max_lines + 10)
+    try:
+      self.speed = int(1000 / m.FPS * m.SPEEDS[self.level])
+    except IndexError:
+      self.speed = int(1000 / m.FPS * m.SPEEDS[-1])
+
+    self.particles.append(part.Level_Up())

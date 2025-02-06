@@ -1,7 +1,7 @@
 from grid_class import Grid
 
 class World:
-  def __init__(self, size: tuple):
+  def __init__(self, size: tuple[int, int]):
     self.blocks = [[[None, None] for column in range(size[0])] for row in range(size[1] + 2)]
 
   def get_block(self, cords: tuple) -> list:
@@ -11,7 +11,7 @@ class World:
     self.blocks[cords[1]][cords[0]] = change
 
   def check_lines(self, grid) -> int:
-    full_lines = []
+    full_lines: list[int] = []
     for row in self.blocks:
       full = False
       for column in row:
@@ -24,7 +24,7 @@ class World:
         full_lines.append(self.blocks.index(row))
 
     self.clear_lines(full_lines, grid)
-    return len(full_lines)
+    return full_lines
 
   def clear_lines(self, lines: list, grid: Grid):
     for line in lines:

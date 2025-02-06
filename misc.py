@@ -1,6 +1,8 @@
 import pygame as pg
 pg.init()
 
+FPS = 60
+
 title_font = pg.font.Font("fonts/highway-encounter.ttf", 50)
 small_title_font = pg.font.Font("fonts/highway-encounter.ttf", 25)
 nums_font = pg.font.Font("fonts/ragnagard.ttf", 20)
@@ -17,17 +19,58 @@ ORANGE = (252, 123, 3)
 DEEP_BLUE = (39, 85, 214)
 PINK = (241, 110, 185)
 
-colors = {
-  "o": YELLOW,
-  "i": BLUE,
-  "s": RED,
-  "z": GREEN,
-  "l": ORANGE,
-  "j": DEEP_BLUE,
-  "t": PINK
-}
+SPEEDS = [
+  48, 43, 38, 33, 28, 23, 18, 13,
+  8, 6, 5, 5, 5, 4
+]
+
+colors = [
+  {
+    "o": YELLOW,
+    "i": BLUE,
+    "s": RED,
+    "z": GREEN,
+    "l": ORANGE,
+    "j": DEEP_BLUE,
+    "t": PINK
+  },
+  {
+
+  }
+]
 
 def outline(rect: pg.Rect, color: tuple[int], weight: int, surface: pg.Surface):
   outrect = pg.Rect(rect.x - weight, rect.y - weight, rect.width + weight * 2, rect.height + weight * 2)
   pg.draw.rect(surface, color, outrect)
   return outrect
+
+
+mini_blocks: dict[str, list[pg.Rect]] = {
+  "": [],
+  "o": [pg.Rect(10, 10 , 30, 30)],
+  "i": [pg.Rect(20, 5, 10, 40)],
+  "s": [
+    pg.Rect(6, 24, 12, 12),
+    pg.Rect(18, 24, 12, 12),
+    pg.Rect(18, 12, 12, 12),
+    pg.Rect(30, 12, 12, 12)
+    ],
+  "z": [
+    pg.Rect(6, 12, 12, 12),
+    pg.Rect(18, 12, 12, 12),
+    pg.Rect(18, 24, 12, 12),
+    pg.Rect(30, 24, 12, 12)
+  ],
+  "l": [
+    pg.Rect(13, 7, 12, 36),
+    pg.Rect(25, 31, 12, 12)
+  ],
+  "j": [
+    pg.Rect(25, 7, 12, 36),
+    pg.Rect(13, 31, 12, 12)
+  ],
+  "t": [
+    pg.Rect(6, 12, 36, 12),
+    pg.Rect(18, 24, 12, 12)
+  ]
+}

@@ -1,6 +1,7 @@
 # Arden Boettcher
 
 import pygame as pg
+from grid_class import Grid
 
 
 class Particle:
@@ -28,6 +29,18 @@ class rect_Part(Particle):
     pass
 
 
-class line_clear_effect(Particle):
-  def __init__(self, lines: list[int]):
-    self.lines = lines
+class Line_Clear_Effect(Particle):
+  def __init__(self, line: int, grid: Grid):
+    self.line = line
+    self.frame = 0
+    self.max_frames = 60
+    self.rect = pg.Rect((grid.pos[0], grid.pos[1] + grid.sq_size * line), grid.size)
+
+  def update(self):
+    self.frame += 1
+    self.rect.width *= 1.5
+
+# class Level_Up(Particle):
+#   def __init__(self, ):
+
+#   def update(self):
