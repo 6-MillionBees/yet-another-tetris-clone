@@ -235,7 +235,9 @@ class Player:
 
   def score_lines(self, lines):
     self.lines_cleared += lines
-    self.score += lines**2
+
+    self.score += lines ** 2 * (self.level + 1) * 100
+
     if self.lines_cleared >= self.max_lines:
       self.level_up()
 
@@ -254,16 +256,21 @@ class Player:
     going = True
     while going:
       going = self.movedown()
-    self.score += 10 * self.level
+    self.score += 5 * self.level
 
 
   def level_up(self):
     self.level += 1
-    self.colorscheme = m.colors[self.level]
-    self.max_lines += (self.max_lines + 10)
+    try:
+      self.colorscheme = m.colors[self.level]
+    except IndexError:
+      self.colorscheme = m.colors[-1]
+    self.max_lines += 10
     try:
       self.speed = int(1000 / m.FPS * m.SPEEDS[self.level])
     except IndexError:
       self.speed = int(1000 / m.FPS * m.SPEEDS[-1])
 
-    self.particles.append(part.Level_Up())
+    print("level up: {}".format(self.speed))
+
+    # self.particles.append(part.Level_Up())

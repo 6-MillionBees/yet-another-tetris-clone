@@ -22,7 +22,7 @@ def pause(player: player_class.Player):
   pause_text = m.nums_font.render("Paused", False, m.BLACK)
   pause_text_rect = pause_text.get_rect()
   pause_text_rect.center = (300, 250)
-
+  pg.time.set_timer(MOVEDOWN, 100)
 
   is_open = True
   while is_open:
@@ -66,13 +66,18 @@ def game_loop():
       if event.type == PARTICLE_UPDATE:
         for particle in player.particles:
           particle.update()
-      elif event.type == MOVEDOWN:
+      if event.type == MOVEDOWN:
         player.movedown()
         if not player.alive:
           player.game_over()
           alive = False
-        pg.time.set_timer(MOVEDOWN, player.speed, 1)
-      elif event.type == pg.KEYDOWN:
+
+        if pg.key.get_pressed()[pg.K_RSHIFT]:
+          pg.time.set_timer(MOVEDOWN, 100, 1)
+        else:
+          pg.time.set_timer(MOVEDOWN, player.speed, 1)
+
+      if event.type == pg.KEYDOWN:
         if event.key == pg.K_ESCAPE:
           pause(player)
         if event.key == pg.K_RIGHT:
