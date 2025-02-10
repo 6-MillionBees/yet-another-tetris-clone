@@ -6,10 +6,12 @@ from world_class import World
 
 class Block:
   def __init__(self, cords, type, center):
+    self.rects = # WIP
     self.cords:list[list[int]] = cords
     self.type:str = type
     self.rotation = 0
     self.center:list[int] = center
+    self.safe = False
 
   def r_rotate(self, world: World):
     old_cords = []
@@ -20,6 +22,7 @@ class Block:
       x = -relative_y
       y = relative_x
       self.cords[self.cords.index(cord)] = [x + self.center[0], y + self.center[1]]
+    self.safe = True
 
     for cord in self.cords:
       try:
@@ -31,6 +34,7 @@ class Block:
         pass
 
       self.cords = old_cords
+      self.safe = False
 
   def l_rotate(self, world: World):
     old_cords = []
@@ -41,6 +45,7 @@ class Block:
       x = relative_y
       y = -relative_x
       self.cords[self.cords.index(cord)] = [x + self.center[0], y + self.center[1]]
+    self.safe = True
 
     for cord in self.cords:
       try:
@@ -52,6 +57,7 @@ class Block:
         pass
 
       self.cords = old_cords
+      self.safe = False
 
 
 
@@ -66,10 +72,10 @@ class o_Block(Block):
     )
 
   def r_rotate(self, arg):
-    pass
+    self.safe = True
 
   def l_rotate(self, arg):
-    pass
+    self.safe = True
 
   def reset_pos(self):
     self.__init__()

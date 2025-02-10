@@ -42,16 +42,16 @@ colors = [
     "l": ORANGE,
     "j": DEEP_BLUE,
     "t": PINK
-  },
-  {
-    "o": LIGHT_GREEN,
-    "i": LIGHT_GREEN,
-    "s": LIME,
-    "z": GREEN,
-    "l": LIME,
-    "j": GREEN,
-    "t": LIGHT_GREEN
   }
+  # {
+  #   "o": LIGHT_GREEN,
+  #   "i": LIGHT_GREEN,
+  #   "s": LIME,
+  #   "z": GREEN,
+  #   "l": LIME,
+  #   "j": GREEN,
+  #   "t": LIGHT_GREEN
+  # }
 ]
 
 def outline(rect: pg.Rect, color: tuple[int], weight: int, surface: pg.Surface):

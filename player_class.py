@@ -27,6 +27,7 @@ class Player:
     self.colorscheme = scheme[0]
 
     # Blocks
+    self.hover_block: Block = None
     self.current_block: Block = None
     self.isheld: bool = False
     self.heldblock: Block = None
@@ -51,6 +52,7 @@ class Player:
 
   def newblock(self):
     self.current_block = self.nextblock
+    self.define_hoverblock(self.current_block)
 
     random_block = randint(0, len(self.grabbag) - 1)
     self.nextblock = self.grabbag[random_block]
@@ -84,9 +86,13 @@ class Player:
       self.current_block.center[1] -= 1
       self.update_rects()
 
-      self.update_world()
-      self.newblock()
+      if self.current_block.safe:
+        self.current_block.safe = False
+      else:
+        self.update_world()
+        self.newblock()
       return False
+    self.current_block.safe = False
     return True
 
 
@@ -274,3 +280,5 @@ class Player:
     print("level up: {}".format(self.speed))
 
     # self.particles.append(part.Level_Up())
+
+  def define_hoverblock():
