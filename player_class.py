@@ -11,7 +11,8 @@ from copy import copy
 
 class Player:
   def __init__(self, grid: Grid, scheme: dict, surface: pg.Surface):
-    self.particles: list[part.Particle] = []
+    # Particles
+    # self.particles: list[part.Particle] = [] # WIP
 
     # Speed & lines
     self.level = 0
@@ -19,17 +20,25 @@ class Player:
     self.lines_cleared: int = 0
     self.speed = int(1000 / m.FPS * m.SPEEDS[self.level])
 
-    # Misc things
-    self.alive: bool = True
-    self.surface: pg.Surface = surface
 
-    self.world = World((grid.columns, grid.rows))
+# |============================================================|    IMPORTANT    |============================================================|
+
+    self.alive: bool = True # self.alive it the boolian keeping the gameloop going BE CAREFUL WITH THIS ONE
+
+# |===========================================================================================================================================|
+
+
+
+    # Misc things
+    self.surface: pg.Surface = surface
     self.colorscheme = scheme[0]
 
+    # World
+    self.world = World((grid.columns, grid.rows))
+
     # Blocks
-    # self.hover_block: Block = None
     self.current_block: Block = None
-    self.isheld: bool = False
+    self.has_held: bool = False
     self.heldblock: Block = None
     self.grid: Grid = grid
     self.score: int = 0
@@ -44,21 +53,22 @@ class Player:
 
 
 
+
+  # This sets up self.nextblock
   def setup(self):
+    # Grabs a random block from the grab-bag
     random_block = randint(0, len(self.grabbag) - 1)
     self.nextblock = self.grabbag[random_block]
 
+    # Removes the block from the grab-bag
     del self.grabbag[random_block]
 
 
 
-
-
   def movedown(self) -> bool:
+    # Check blocks.py for
     boolian = self.current_block.movedown(self.world)
-    if self.current_block.safe:
-      self.current_block.safe = False
-    elif not boolian:
+    if not boolian:
       self.update_world()
       self.newblock()
     return boolian
@@ -85,7 +95,7 @@ class Player:
         continue
       self.alive = False
 
-    self.isheld = False
+    self.has_held = False
 
 
 
@@ -101,7 +111,7 @@ class Player:
     if not cleared_lines:
       return
 
-    # for line in cleared_lines:
+    # for line in cleared_lines: # WIP
     #   self.particles.append(part.Line_Clear_Particle(line))
 
     self.score_lines(len(cleared_lines))
@@ -111,10 +121,8 @@ class Player:
 
 
   def draw_blocks(self):
-    # for rect in self.hover_block.rects:
-    #   pg.draw.rect(self.surface, m.T_WHITE, rect)
-    for rect in self.current_block.rects:
-      pg.draw.rect(self.surface, self.colorscheme[self.current_block.type], rect)
+    # self.hover_block.display(self.colorscheme)
+    self.current_block.display(self.surface, self.colorscheme)
 
 
 
@@ -155,64 +163,22 @@ class Player:
 
 
 
-  def right(self):
-    self.current_block.cords = [[cordnate[0] + 1, cordnate[1]] for cordnate in self.current_block.cords]
-    self.current_block.center[0] += 1
-
-    for cord in self.current_block.cords:
-      try:
-        if not self.world.get_block(cord)[0]:
-          continue
-      except IndexError:
-        pass
-      self.current_block.cords = [[cordnate[0] - 1, cordnate[1]] for cordnate in self.current_block.cords]
-      self.current_block.center[0] -= 1
-
-      break
-
-    self.update_rects()
-
-
-
-  def left(self):
-    self.current_block.cords = [[cordnate[0] - 1, cordnate[1]] for cordnate in self.current_block.cords]
-    self.current_block.center[0] -= 1
-
-    for cord in self.current_block.cords:
-      try:
-        if cord[0] < 0:
-          raise IndexError
-        if not self.world.get_block(cord)[0]:
-          continue
-      except IndexError:
-        pass
-      self.current_block.cords = [[cordnate[0] + 1, cordnate[1]] for cordnate in self.current_block.cords]
-      self.current_block.center[0] += 1
-
-      break
-
-    self.update_rects()
-
-
-
-
-
   def hold(self) -> None:
-    if self.isheld:
+    if self.has_held:
       return
     if self.heldblock:
       temp_hold = self.current_block.reset_pos(self.grid)
       self.current_block = self.heldblock
       self.heldblock = temp_hold
       self.update_rects()
-      self.isheld = True
+      self.has_held = True
       return
 
     self.heldblock = self.current_block.reset_pos(self.grid)
     self.newblock()
-    self.isheld = True
+    self.has_held = True
 
-    self.update_rects()
+    self.current_block.update_rects()
 
 
 
@@ -261,18 +227,6 @@ class Player:
 
 
 
-  def r_rotate(self):
-    self.current_block.r_rotate(self.world)
-    self.update_rects()
-
-
-
-  def l_rotate(self):
-    self.current_block.l_rotate(self.world)
-    self.update_rects()
-
-
-
   def update_rects(self):
     self.current_block.update_rects()
     # self.define_hoverblock(self.current_block)
@@ -301,7 +255,56 @@ class Player:
 
     print("level up: {}".format(self.speed))
 
-    # self.particles.append(part.Level_Up())
+    # self.particles.append(part.Level_Up()) # WIP
+
+
+
+
+  def player_events(self, event: pg.event.Event):
+    # if event.type == m.PARTICLE_UPDATE: # WIP
+    #   for particle in self.particles:
+    #     particle.update()
+
+
+    if event.type == m.MOVEDOWN:
+      self.movedown()
+
+      # self.movedown() changes self.alive to false if newblock() intersects with the world
+      if not self.alive:
+        self.game_over()
+
+
+      # Checks if shift is pressed
+      if pg.key.get_pressed()[pg.K_RSHIFT]:
+        # It's halving the amount of time it takes to move down
+        # (this might cause movedown events to happen too fast) <- possible breaking point
+        if self.speed < 100:
+          pg.time.set_timer(m.MOVEDOWN, int(self.speed / 2), 1)
+        else:
+          pg.time.set_timer(m.MOVEDOWN, 100, 1)
+      else:
+        pg.time.set_timer(m.MOVEDOWN, self.speed, 1)
+
+
+    if event.type == pg.KEYDOWN:
+
+      # Block Movement
+      if event.key == pg.K_RIGHT:
+        self.current_block.right(self.world)
+      if event.key == pg.K_LEFT:
+        self.current_block.left(self.world)
+
+      # Block Rotation
+      if event.key == pg.K_UP:
+        self.current_block.l_rotate(self.world)
+      if event.key == pg.K_DOWN:
+        self.current_block.r_rotate(self.world)
+
+      # Harddrop
+      if event.key == pg.K_SPACE:
+        self.fastdrop()
+      if event.key == pg.K_RETURN:
+        self.hold()
 
 
 

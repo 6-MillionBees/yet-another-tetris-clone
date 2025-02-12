@@ -61,6 +61,13 @@ def outline(rect: pg.Rect, color: tuple[int], weight: int, surface: pg.Surface):
   return outrect
 
 
+# Centers text
+def center_text(text: pg.Surface, rect: pg.Rect, offsets: tuple[int, int] = (0, 0)) -> pg.Rect:
+  text_rect = text.get_rect()
+  text_rect.center = (rect.center[0] + offsets[0], rect.center[1] + offsets[1])
+
+  return text_rect
+
 mini_blocks: dict[str, list[pg.Rect]] = {
   "": [],
   "o": [pg.Rect(10, 10 , 30, 30)],
@@ -90,3 +97,8 @@ mini_blocks: dict[str, list[pg.Rect]] = {
     pg.Rect(18, 24, 12, 12)
   ]
 }
+
+# Events
+
+MOVEDOWN = pg.event.custom_type()
+PARTICLE_UPDATE = pg.event.custom_type()
