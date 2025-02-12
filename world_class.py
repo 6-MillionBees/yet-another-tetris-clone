@@ -23,6 +23,16 @@ class World:
       if full:
         full_lines.append(self.blocks.index(row))
 
+    for row in self.blocks:
+      for square in row:
+        if square[0] == None:
+          print(".", end="")
+        else:
+          print(square[1], end="")
+      print()
+
+    print()
+
     self.clear_lines(full_lines, grid)
     return full_lines
 
@@ -39,14 +49,3 @@ class World:
 
           block[0].y += grid.sq_size[1]
 
-
-    # for row in self.blocks:
-    #   for square in row:
-    #     if square[0] == None:
-    #       print(".", end="")
-    #     else:
-    #       print("#", end="")
-
-    #   print()
-
-    # print()

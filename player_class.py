@@ -5,7 +5,7 @@ from grid_class import Grid
 from world_class import World
 import particles as part
 import misc as m
-
+from copy import copy
 
 
 
@@ -27,14 +27,13 @@ class Player:
     self.colorscheme = scheme[0]
 
     # Blocks
-    self.hover_block: Block = None
+    # self.hover_block: Block = None
     self.current_block: Block = None
     self.isheld: bool = False
     self.heldblock: Block = None
     self.grid: Grid = grid
     self.score: int = 0
-    self.rects: list[pg.Rect] = []
-    self.grabbag: list[Block] = [o_Block(), i_Block(), s_Block(), z_Block(), l_Block(), j_Block(), t_Block()]
+    self.grabbag: list[Block] = [o_Block(self.grid), i_Block(self.grid), s_Block(self.grid), z_Block(self.grid), l_Block(self.grid), j_Block(self.grid), t_Block(self.grid)]
     self.nextblock = None
 
     self.setup()
@@ -43,6 +42,8 @@ class Player:
     self.nextblock_rect = pg.Rect(25, 10, 50, 50)
     self.heldblock_rect = pg.Rect(25, 80, 50, 50)
 
+
+
   def setup(self):
     random_block = randint(0, len(self.grabbag) - 1)
     self.nextblock = self.grabbag[random_block]
@@ -50,9 +51,25 @@ class Player:
     del self.grabbag[random_block]
 
 
+
+
+
+  def movedown(self) -> bool:
+    boolian = self.current_block.movedown(self.world)
+    if self.current_block.safe:
+      self.current_block.safe = False
+    elif not boolian:
+      self.update_world()
+      self.newblock()
+    return boolian
+
+
+
+
+
   def newblock(self):
     self.current_block = self.nextblock
-    self.define_hoverblock(self.current_block)
+    # self.define_hoverblock(self.current_block)
 
     random_block = randint(0, len(self.grabbag) - 1)
     self.nextblock = self.grabbag[random_block]
@@ -60,7 +77,7 @@ class Player:
     del self.grabbag[random_block]
 
     if not self.grabbag:
-      self.grabbag = [o_Block(), i_Block(), s_Block(), z_Block(), l_Block(), j_Block(), t_Block()]
+      self.grabbag = [o_Block(self.grid), i_Block(self.grid), s_Block(self.grid), z_Block(self.grid), l_Block(self.grid), j_Block(self.grid), t_Block(self.grid)]
 
     self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + (cordnate[1] - 2) * self.grid.sq_size[1] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
     for cord in self.current_block.cords:
@@ -71,35 +88,13 @@ class Player:
     self.isheld = False
 
 
-  def movedown(self) -> bool:
-    self.current_block.cords = [(cordnate[0], cordnate[1] + 1) for cordnate in self.current_block.cords]
-    self.current_block.center[1] += 1
-    self.update_rects()
 
-    for cord in self.current_block.cords:
-      try:
-        if not self.world.get_block(cord)[0]:
-          continue
-      except IndexError:
-        pass
-      self.current_block.cords = [(cordnate[0], cordnate[1] - 1) for cordnate in self.current_block.cords]
-      self.current_block.center[1] -= 1
-      self.update_rects()
-
-      if self.current_block.safe:
-        self.current_block.safe = False
-      else:
-        self.update_world()
-        self.newblock()
-      return False
-    self.current_block.safe = False
-    return True
 
 
   def update_world(self):
     num = 0
     for cord in self.current_block.cords:
-      self.world.change_block(cord, [self.rects[num], self.current_block.type])
+      self.world.change_block(cord, [self.current_block.rects[num], self.current_block.type])
       num += 1
 
     cleared_lines = self.world.check_lines(self.grid)
@@ -112,9 +107,17 @@ class Player:
     self.score_lines(len(cleared_lines))
 
 
+
+
+
   def draw_blocks(self):
-    for rect in self.rects:
+    # for rect in self.hover_block.rects:
+    #   pg.draw.rect(self.surface, m.T_WHITE, rect)
+    for rect in self.current_block.rects:
       pg.draw.rect(self.surface, self.colorscheme[self.current_block.type], rect)
+
+
+
 
 
   def draw_world(self):
@@ -122,6 +125,7 @@ class Player:
       for column in row:
         if column[0] != None:
           pg.draw.rect(self.surface, self.colorscheme[column[1]], column[0])
+
 
     self.surface.blit(m.nums_font.render(str(self.score), False, m.GREEN), (500, 400))
 
@@ -149,6 +153,8 @@ class Player:
 
 
 
+
+
   def right(self):
     self.current_block.cords = [[cordnate[0] + 1, cordnate[1]] for cordnate in self.current_block.cords]
     self.current_block.center[0] += 1
@@ -165,6 +171,7 @@ class Player:
       break
 
     self.update_rects()
+
 
 
   def left(self):
@@ -186,22 +193,27 @@ class Player:
 
     self.update_rects()
 
+
+
+
+
   def hold(self) -> None:
     if self.isheld:
       return
     if self.heldblock:
-      hold = self.current_block.reset_pos()
+      temp_hold = self.current_block.reset_pos(self.grid)
       self.current_block = self.heldblock
-      self.heldblock = hold
+      self.heldblock = temp_hold
       self.update_rects()
       self.isheld = True
       return
 
-    self.heldblock = self.current_block.reset_pos()
+    self.heldblock = self.current_block.reset_pos(self.grid)
     self.newblock()
     self.isheld = True
 
     self.update_rects()
+
 
 
   def game_over(self):
@@ -247,22 +259,32 @@ class Player:
     if self.lines_cleared >= self.max_lines:
       self.level_up()
 
+
+
   def r_rotate(self):
     self.current_block.r_rotate(self.world)
     self.update_rects()
+
+
 
   def l_rotate(self):
     self.current_block.l_rotate(self.world)
     self.update_rects()
 
+
+
   def update_rects(self):
-    self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + (cordnate[1] - 2) * self.grid.sq_size[0] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
+    self.current_block.update_rects()
+    # self.define_hoverblock(self.current_block)
+
+
 
   def fastdrop(self):
-    going = True
-    while going:
-      going = self.movedown()
+    self.current_block.fastdrop(self.world)
+    self.update_world()
+    self.newblock()
     self.score += 5 * self.level
+
 
 
   def level_up(self):
@@ -281,4 +303,8 @@ class Player:
 
     # self.particles.append(part.Level_Up())
 
-  def define_hoverblock():
+
+
+  # def define_hoverblock(self, block: Block):
+  #   self.hover_block = copy(self.current_block)
+  #   self.hover_block.fastdrop(self.world)

@@ -10,7 +10,7 @@ import misc as m
 pg.init()
 
 clock = pg.time.Clock()
-screen = pg.display.set_mode((600, 600))
+screen = pg.display.set_mode((600, 600), pg.FULLSCREEN)
 pg.display.set_caption("Tetris")
 
 MOVEDOWN = pg.event.custom_type()
