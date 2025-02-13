@@ -8,6 +8,7 @@ small_title_font = pg.font.Font("fonts/highway-encounter.ttf", 25)
 nums_font = pg.font.Font("fonts/ragnagard.ttf", 20)
 big_nums_font = pg.font.Font("fonts/ragnagard.ttf", 40)
 
+T_WHITE = (255, 255, 255, 128)
 WHITE = (255, 255, 255)
 T_GREY = (120, 120, 120, 50)
 GREY = (120, 120, 120)
@@ -45,7 +46,8 @@ colors = [
     "z": GREEN,
     "l": ORANGE,
     "j": DEEP_BLUE,
-    "t": PINK
+    "t": PINK,
+    "h": T_WHITE
   }
   # {
   #   "o": LIGHT_GREEN,
@@ -54,16 +56,8 @@ colors = [
   #   "z": GREEN,
   #   "l": LIME,
   #   "j": GREEN,
-  #   "t": LIGHT_GREEN
-  # },
-  # {
-  #   "o": LIGHT_PINK,
-  #   "i": LIGHT_PINK,
-  #   "s": PALE_PINK,
-  #   "z": BRIGHT_PURPLE,
-  #   "l": PALE_PINK,
-  #   "j": BRIGHT_PURPLE,
-  #   "t": LIGHT_PINK
+  #   "t": LIGHT_GREEN,
+  #   "h": T_WHITE
   # }
 ]
 
@@ -72,6 +66,13 @@ def outline(rect: pg.Rect, color: tuple[int], weight: int, surface: pg.Surface):
   pg.draw.rect(surface, color, outrect)
   return outrect
 
+
+# Centers text
+def center_text(text: pg.Surface, rect: pg.Rect, offsets: tuple[int, int] = (0, 0)) -> pg.Rect:
+  text_rect = text.get_rect()
+  text_rect.center = (rect.center[0] + offsets[0], rect.center[1] + offsets[1])
+
+  return text_rect
 
 mini_blocks: dict[str, list[pg.Rect]] = {
   "": [],
@@ -102,3 +103,8 @@ mini_blocks: dict[str, list[pg.Rect]] = {
     pg.Rect(18, 24, 12, 12)
   ]
 }
+
+# Events
+
+MOVEDOWN = pg.event.custom_type()
+PARTICLE_UPDATE = pg.event.custom_type()
