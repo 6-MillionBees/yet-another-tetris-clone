@@ -8,7 +8,7 @@ small_title_font = pg.font.Font("fonts/highway-encounter.ttf", 25)
 nums_font = pg.font.Font("fonts/ragnagard.ttf", 20)
 big_nums_font = pg.font.Font("fonts/ragnagard.ttf", 40)
 
-T_WHITE = (255, 255, 255, 50)
+T_WHITE = (255, 255, 255, 128)
 WHITE = (255, 255, 255)
 T_GREY = (120, 120, 120, 50)
 GREY = (120, 120, 120)

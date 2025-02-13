@@ -3,7 +3,7 @@ from blocks import *
 from random import randint
 from grid_class import Grid
 from world_class import World
-import particles as part
+# import particles as part
 import misc as m
 
 
@@ -14,11 +14,16 @@ class Player:
     # self.particles: list[part.Particle] = [] # WIP
 
     # Speed & lines
-    self.level = 0
-    self.max_lines = 10
+    self.level: int = 0
+    self.max_lines: int = 10
     self.lines_cleared: int = 0
-    self.speed = int(1000 / m.FPS * m.SPEEDS[self.level])
+    self.speed: int = int(1000 / m.FPS * m.SPEEDS[self.level])
 
+    # Line Scoring
+    self.combo: int = 0
+
+    # Scores
+    self.max_combo: int = 0
 
 # |============================================================|    IMPORTANT    |============================================================|
 
@@ -29,10 +34,10 @@ class Player:
 
     # Misc things
     self.surface: pg.Surface = surface
-    self.colorscheme = scheme[0]
+    self.colorscheme: dict[str, tuple] = scheme[0]
 
     # World
-    self.world = World((grid.columns, grid.rows))
+    self.world: World = World((grid.columns, grid.rows))
 
     # Blocks
     self.current_block: Block = None
@@ -49,7 +54,7 @@ class Player:
       j_Block(self.grid, self.world),
       t_Block(self.grid, self.world)
     ]
-    self.nextblock = None
+    self.nextblock: Block = None
 
     self.setup()
     self.newblock()
@@ -110,6 +115,7 @@ class Player:
       if not self.world.get_block(cord)[0]:
         continue
       self.alive = False
+      self.game_over()
 
     self.has_held = False
 
@@ -210,6 +216,10 @@ class Player:
     quit_rect.center = (300, 475)
     quit_text_rect.center = quit_rect.center
 
+    score_text = m.nums_font.render(str(self.score), False, m.GREEN)
+    score_rect = score_text.get_rect()
+    score_rect.center = (300, 300)
+
     self.surface.fill(m.T_GREY)
     is_open = True
     while is_open:
@@ -223,6 +233,7 @@ class Player:
 
       m.outline(quit_rect, m.BLACK, 2, self.surface)
       pg.draw.rect(self.surface, m.GREY, quit_rect)
+      self.surface.blit(score_text, score_rect)
       self.surface.blit(over_text, over_rect)
       self.surface.blit(quit_text, quit_text_rect)
 
@@ -234,10 +245,37 @@ class Player:
   def score_lines(self, lines):
     self.lines_cleared += lines
 
-    self.score += lines ** 2 * (self.level + 1) * 100
+    if lines == 4:
+      self.score += 1200 * (self.level + 1) + self.combo * 100
+      self.combo += 1
+      if self.combo > self.max_combo:
+        self.max_combo = self.combo
+
+
+    elif lines == 3:
+      self.score += 300 * (self.level + 1)
+      if self.combo > self.max_combo:
+        self.max_combo = self.combo
+      self.combo = 0
+
+    elif lines == 2:
+      self.score += 100 * (self.level + 1)
+      if self.combo > self.max_combo:
+        self.max_combo = self.combo
+      self.combo = 0
+
+
+    elif lines == 1:
+      self.score += 40 * (self.level + 1)
+      if self.combo > self.max_combo:
+        self.max_combo = self.combo
+      self.combo = 0
+
 
     if self.lines_cleared >= self.max_lines:
       self.level_up()
+
+
 
 
 
@@ -278,11 +316,6 @@ class Player:
     if event.type == m.MOVEDOWN:
       self.movedown()
       self.current_block.update_rects(self.world)
-
-      # self.movedown() changes self.alive to false if newblock() intersects with the world
-      if not self.alive:
-        self.game_over()
-
 
       # Checks if shift is pressed
       if pg.key.get_pressed()[pg.K_RSHIFT]:

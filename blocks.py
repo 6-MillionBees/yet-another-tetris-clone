@@ -136,11 +136,17 @@ class Block:
       except IndexError:
         pass # This continues the code to the part where it resets the blocks
 
+
       # This part of the code is for reseting the position
       self.cords = [(cordnate[0], cordnate[1] - 1) for cordnate in self.cords]
       self.center[1] -= 1
       self.update_rects(self.world)
+
+      if self.safe:
+        self.safe = False
+        return True
       return False
+
     self.safe = False
     return True
 
@@ -164,6 +170,7 @@ class Block:
   def right(self, world: World):
     self.cords = [[cordnate[0] + 1, cordnate[1]] for cordnate in self.cords]
     self.center[0] += 1
+    moved = True
 
     for cord in self.cords:
       try:
@@ -173,8 +180,11 @@ class Block:
         pass
       self.cords = [[cordnate[0] - 1, cordnate[1]] for cordnate in self.cords]
       self.center[0] -= 1
-
+      moved = False
       break
+
+    if moved:
+      self.safe = True
 
     self.update_rects(world)
 
@@ -183,6 +193,7 @@ class Block:
   def left(self, world: World):
     self.cords = [[cordnate[0] - 1, cordnate[1]] for cordnate in self.cords]
     self.center[0] -= 1
+    moved = True
 
     for cord in self.cords:
       try:
@@ -194,8 +205,11 @@ class Block:
         pass
       self.cords = [[cordnate[0] + 1, cordnate[1]] for cordnate in self.cords]
       self.center[0] += 1
-
+      moved = False
       break
+
+    if moved:
+      self.safe = True
 
     self.update_rects(world)
 
@@ -217,10 +231,10 @@ class o_Block(Block):
     )
 
   def r_rotate(self, arg):
-    self.safe = True
+    pass
 
   def l_rotate(self, arg):
-    self.safe = True
+    pass
 
   def reset_pos(self, grid: Grid, world: World):
     self.__init__(grid, world)
