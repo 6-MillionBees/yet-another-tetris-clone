@@ -19,18 +19,22 @@ ORANGE = (252, 123, 3)
 
 YELLOW = (254, 248, 76)
 
-LIME = (100, 248, 45)
+LIME = (189, 233, 83)
 GREEN = (100, 174, 61)
 LIGHT_GREEN = (126, 210, 126)
 
 BLUE = (81, 225, 252)
 DEEP_BLUE = (39, 85, 214)
 
+LIGHT_PINK = (248, 175, 245)
+PALE_PINK = (250, 120, 249)
 PINK = (241, 110, 185)
+BRIGHT_PURPLE = (217, 0, 202)
 
 SPEEDS = [
   48, 43, 38, 33, 28, 23, 18, 13,
-  8, 6, 5, 5, 5, 4
+  8, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3,
+  2, 2, 2, 1
 ]
 
 colors = [
@@ -42,16 +46,25 @@ colors = [
     "l": ORANGE,
     "j": DEEP_BLUE,
     "t": PINK
-  },
-  {
-    "o": LIGHT_GREEN,
-    "i": LIGHT_GREEN,
-    "s": LIME,
-    "z": GREEN,
-    "l": LIME,
-    "j": GREEN,
-    "t": LIGHT_GREEN
   }
+  # {
+  #   "o": LIGHT_GREEN,
+  #   "i": LIGHT_GREEN,
+  #   "s": LIME,
+  #   "z": GREEN,
+  #   "l": LIME,
+  #   "j": GREEN,
+  #   "t": LIGHT_GREEN
+  # },
+  # {
+  #   "o": LIGHT_PINK,
+  #   "i": LIGHT_PINK,
+  #   "s": PALE_PINK,
+  #   "z": BRIGHT_PURPLE,
+  #   "l": PALE_PINK,
+  #   "j": BRIGHT_PURPLE,
+  #   "t": LIGHT_PINK
+  # }
 ]
 
 def outline(rect: pg.Rect, color: tuple[int], weight: int, surface: pg.Surface):

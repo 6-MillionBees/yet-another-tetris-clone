@@ -117,7 +117,7 @@ class Player:
         if column[0] != None:
           pg.draw.rect(self.surface, self.colorscheme[column[1]], column[0])
 
-    self.surface.blit(m.nums_font.render(str(self.score), False, m.GREEN), (500, 400))
+    self.surface.blit(m.nums_font.render(str(self.score), False, m.GREEN), (450, 400))
 
     m.outline(self.heldblock_rect, m.BLACK, 2, self.surface)
     pg.draw.rect(self.surface, m.GREY, self.heldblock_rect)
@@ -256,7 +256,7 @@ class Player:
     going = True
     while going:
       going = self.movedown()
-    self.score += 5 * self.level
+    self.score += 5 * (self.level + 1)
 
 
   def level_up(self):

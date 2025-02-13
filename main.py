@@ -48,6 +48,7 @@ def pause(player: player_class.Player):
     clock.tick(m.FPS)
 
 
+
 def game_loop():
   grid = grid_class.Grid(10, 20, (30, 30), (100, -2))
   player = player_class.Player(grid, m.colors, screen)
