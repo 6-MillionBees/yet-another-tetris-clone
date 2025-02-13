@@ -42,7 +42,8 @@ colors = [
     "z": GREEN,
     "l": ORANGE,
     "j": DEEP_BLUE,
-    "t": PINK
+    "t": PINK,
+    "h": T_WHITE
   }
   # {
   #   "o": LIGHT_GREEN,
@@ -51,7 +52,8 @@ colors = [
   #   "z": GREEN,
   #   "l": LIME,
   #   "j": GREEN,
-  #   "t": LIGHT_GREEN
+  #   "t": LIGHT_GREEN,
+  #   "h": T_WHITE
   # }
 ]
 

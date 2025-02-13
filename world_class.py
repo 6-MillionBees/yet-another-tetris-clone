@@ -11,6 +11,15 @@ class World:
     self.blocks[cords[1]][cords[0]] = change
 
   def check_lines(self, grid) -> int:
+
+    # for row in self.blocks: # This is to print the world for debugging
+    #   for block in row:
+    #     if not block[0]:
+    #       print(".", end="")
+    #     else:
+    #       print(block[1], end="")
+    #   print()
+
     full_lines: list[int] = []
     for row in self.blocks:
       full = False

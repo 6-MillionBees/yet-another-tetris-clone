@@ -5,7 +5,6 @@ from grid_class import Grid
 from world_class import World
 import particles as part
 import misc as m
-from copy import copy
 
 
 
@@ -28,7 +27,6 @@ class Player:
 # |===========================================================================================================================================|
 
 
-
     # Misc things
     self.surface: pg.Surface = surface
     self.colorscheme = scheme[0]
@@ -42,7 +40,15 @@ class Player:
     self.heldblock: Block = None
     self.grid: Grid = grid
     self.score: int = 0
-    self.grabbag: list[Block] = [o_Block(self.grid), i_Block(self.grid), s_Block(self.grid), z_Block(self.grid), l_Block(self.grid), j_Block(self.grid), t_Block(self.grid)]
+    self.grabbag: list[Block] = [
+      o_Block(self.grid, self.world),
+      i_Block(self.grid, self.world),
+      s_Block(self.grid, self.world),
+      z_Block(self.grid, self.world),
+      l_Block(self.grid, self.world),
+      j_Block(self.grid, self.world),
+      t_Block(self.grid, self.world)
+    ]
     self.nextblock = None
 
     self.setup()
@@ -79,6 +85,7 @@ class Player:
 
   def newblock(self):
     self.current_block = self.nextblock
+    self.current_block.update_rects(self.world)
     # self.define_hoverblock(self.current_block)
 
     random_block = randint(0, len(self.grabbag) - 1)
@@ -86,8 +93,17 @@ class Player:
 
     del self.grabbag[random_block]
 
+    # Checks if grabbag is empty, if it is then it gets refilled
     if not self.grabbag:
-      self.grabbag = [o_Block(self.grid), i_Block(self.grid), s_Block(self.grid), z_Block(self.grid), l_Block(self.grid), j_Block(self.grid), t_Block(self.grid)]
+      self.grabbag = [
+        o_Block(self.grid, self.world),
+        i_Block(self.grid, self.world),
+        s_Block(self.grid, self.world),
+        z_Block(self.grid, self.world),
+        l_Block(self.grid, self.world),
+        j_Block(self.grid, self.world),
+        t_Block(self.grid, self.world)
+      ]
 
     self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + (cordnate[1] - 2) * self.grid.sq_size[1] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
     for cord in self.current_block.cords:
@@ -118,10 +134,8 @@ class Player:
 
 
 
-
-
   def draw_blocks(self):
-    # self.hover_block.display(self.colorscheme)
+    self.current_block.hover_block.display(self.surface, self.colorscheme)
     self.current_block.display(self.surface, self.colorscheme)
 
 
@@ -167,18 +181,18 @@ class Player:
     if self.has_held:
       return
     if self.heldblock:
-      temp_hold = self.current_block.reset_pos(self.grid)
+      temp_hold = self.current_block.reset_pos(self.grid, self.world)
       self.current_block = self.heldblock
+      self.current_block.getworld(self.world)
       self.heldblock = temp_hold
-      self.update_rects()
+      self.current_block.update_rects(self.world)
       self.has_held = True
       return
 
-    self.heldblock = self.current_block.reset_pos(self.grid)
+    self.heldblock = self.current_block.reset_pos(self.grid, self.world)
     self.newblock()
     self.has_held = True
 
-    self.current_block.update_rects()
 
 
 
@@ -227,11 +241,6 @@ class Player:
 
 
 
-  def update_rects(self):
-    self.current_block.update_rects()
-    # self.define_hoverblock(self.current_block)
-
-
 
   def fastdrop(self):
     self.current_block.fastdrop(self.world)
@@ -268,6 +277,7 @@ class Player:
 
     if event.type == m.MOVEDOWN:
       self.movedown()
+      self.current_block.update_rects(self.world)
 
       # self.movedown() changes self.alive to false if newblock() intersects with the world
       if not self.alive:

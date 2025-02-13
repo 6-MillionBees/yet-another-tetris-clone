@@ -9,6 +9,7 @@ import misc as m
 
 pg.init()
 
+
 clock = pg.time.Clock()
 screen = pg.display.set_mode((600, 600))
 pg.display.set_caption("Tetris")
@@ -126,7 +127,9 @@ def main():
 
   start_text = m.small_title_font.render("start", False, m.DEEP_BLUE)
   start_text_rect = start_text.get_rect()
+
   start_button = pg.Rect(0, 0, 200, 50)
+
   start_button.center = (300, 325)
   start_text_rect.center = (300, 325)
 
@@ -135,6 +138,7 @@ def main():
   title_rect.center = (300, 150)
 
   while running:
+
     for event in pg.event.get():
       if event.type == pg.QUIT:
         running = False
