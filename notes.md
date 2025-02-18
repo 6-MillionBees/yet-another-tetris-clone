@@ -4,6 +4,10 @@
 
 ### 1. ) Line Clear effects
 
+#### Needs to:
+
+- change size (over time)
+- disapear
 
 
 <!-- ### 2. Particles!!!

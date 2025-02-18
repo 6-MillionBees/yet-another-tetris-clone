@@ -111,7 +111,7 @@ def game_loop():
 
     # Pause rects <3
     m.outline(pause_rect, m.BLACK, 2, screen)
-    pg.draw.rect(screen, m.GREY, pause_rect)
+    pg.draw.rect(screen, player.colorscheme["back"], pause_rect)
 
     # Draw particles
     # for particle in player.particles:
