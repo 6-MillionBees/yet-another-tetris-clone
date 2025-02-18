@@ -143,8 +143,10 @@ def main():
       if event.type == pg.QUIT:
         running = False
         break
+
       if event.type == pg.MOUSEBUTTONDOWN:
-        game_loop()
+        if start_button.collidepoint(event.pos):
+          game_loop()
 
     screen.fill(m.GREY)
     screen.blit(title, title_rect)
