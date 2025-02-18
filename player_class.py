@@ -154,17 +154,20 @@ class Player:
         if column[0] != None:
           pg.draw.rect(self.surface, self.colorscheme[column[1]], column[0])
 
+    score_text = m.nums_font.render(str(self.score), False, m.GREEN)
+    score_text_rect = score_text.get_rect()
+    score_text_rect.center = (500, 400)
 
-    self.surface.blit(m.nums_font.render(str(self.score), False, m.GREEN), (500, 400))
+    self.surface.blit(score_text, score_text_rect)
 
     m.outline(self.heldblock_rect, m.BLACK, 2, self.surface)
-    pg.draw.rect(self.surface, m.GREY, self.heldblock_rect)
+    pg.draw.rect(self.surface, self.colorscheme["back"], self.heldblock_rect)
 
     m.outline(self.nextblock_rect, m.BLACK, 2, self.surface)
-    pg.draw.rect(self.surface, m.GREY, self.nextblock_rect)
+    pg.draw.rect(self.surface, self.colorscheme["back"], self.nextblock_rect)
 
     try:
-      for block in m.mini_blocks[self.heldblock.type]:
+      for block in m.MINI_BLOCKS[self.heldblock.type]:
         temp_block = pg.Rect(block.x, block.y, block.width, block.height)
         temp_block.x += 25
         temp_block.y += 80
@@ -172,7 +175,7 @@ class Player:
     except AttributeError:
       pass
 
-    for block in m.mini_blocks[self.nextblock.type]:
+    for block in m.MINI_BLOCKS[self.nextblock.type]:
       temp_block = pg.Rect(block.x, block.y, block.width, block.height)
       temp_block.x += 25
       temp_block.y += 10
@@ -220,7 +223,7 @@ class Player:
     score_rect = score_text.get_rect()
     score_rect.center = (300, 300)
 
-    self.surface.fill(m.T_GREY)
+    self.surface.fill(self.colorscheme["back"])
     is_open = True
     while is_open:
       for event in pg.event.get():
@@ -232,7 +235,7 @@ class Player:
             is_open = False
 
       m.outline(quit_rect, m.BLACK, 2, self.surface)
-      pg.draw.rect(self.surface, m.GREY, quit_rect)
+      pg.draw.rect(self.surface, self.colorscheme["back"], quit_rect)
       self.surface.blit(score_text, score_rect)
       self.surface.blit(over_text, over_rect)
       self.surface.blit(quit_text, quit_text_rect)

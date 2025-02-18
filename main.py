@@ -100,7 +100,7 @@ def game_loop():
           pause(player)
 
     # Background
-    screen.fill(m.GREY)
+    screen.fill(player.colorscheme["back"])
 
     # Draw grid
     grid.display(screen)
@@ -125,17 +125,33 @@ def game_loop():
 def main():
   running = True
 
-  start_text = m.small_title_font.render("start", False, m.DEEP_BLUE)
+  start_text = m.small_title_font.render("start", False, m.BLACK)
   start_text_rect = start_text.get_rect()
-
-  start_button = pg.Rect(0, 0, 200, 50)
-
-  start_button.center = (300, 325)
   start_text_rect.center = (300, 325)
 
-  title = m.title_font.render("Tetris", False, m.DEEP_BLUE)
-  title_rect: pg.Rect = title.get_rect()
-  title_rect.center = (300, 150)
+  start_button = pg.Rect(0, 0, 200, 50)
+  start_button.center = (300, 325)
+  start_rect_colors = (m.DARK_BLUE, m.BLACK)
+
+  title_surfaces: list[pg.Surface] = [
+    m.title_font.render("T", False, m.RED),
+    m.title_font.render("E", False, m.ORANGE),
+    m.title_font.render("T", False, m.YELLOW),
+    m.title_font.render("R", False, m.GREEN),
+    m.title_font.render("I", False, m.BLUE),
+    m.title_font.render("S", False, m.PINK),
+  ]
+
+  title_pos: list[pg.Rect] = []
+  title_offset = 99.5
+  for surface in title_surfaces:
+    surface_rect = surface.get_rect()
+    surface_rect.center = (surface_rect.center[0] + title_offset, 150)
+    title_offset += 66.8
+    title_pos.append(surface_rect)
+
+  title = list(zip(title_surfaces, title_pos))
+
 
   while running:
 
@@ -148,11 +164,22 @@ def main():
         if start_button.collidepoint(event.pos):
           game_loop()
 
-    screen.fill(m.GREY)
-    screen.blit(title, title_rect)
+      if event.type == pg.MOUSEMOTION:
+        if start_button.collidepoint(event.pos):
+          start_text = m.small_title_font.render("start", False, m.WHITE)
+          start_rect_colors = (m.DEEP_BLUE, m.WHITE)
+        else:
+          start_text = m.small_title_font.render("start", False, m.BLACK)
+          start_rect_colors = (m.DARK_BLUE, m.BLACK)
 
-    m.outline(start_button, m.BLACK, 2, screen)
-    pg.draw.rect(screen, m.GREY, start_button)
+    screen.fill(m.DARK_BLUE)
+
+
+    for surface, pos in title:
+      screen.blit(surface, pos)
+
+    m.outline(start_button, start_rect_colors[1], 2, screen)
+    pg.draw.rect(screen, start_rect_colors[0], start_button)
     screen.blit(start_text, start_text_rect)
 
     pg.display.flip()
