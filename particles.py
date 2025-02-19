@@ -25,5 +25,5 @@ class Particle(pg.sprite.Sprite):
     # self.rect = self.image.get_rect(center=self.pos)
 
 
-class Clear_Line_Part(pg.sprite.Sprite):
-  def __init__(self, groups: pg.sprite.Group, pos: int, ):
+# class Clear_Line_Part(pg.sprite.Sprite):
+#   def __init__(self, groups: pg.sprite.Group, pos: int, ):

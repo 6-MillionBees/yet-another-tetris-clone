@@ -399,6 +399,6 @@ class Hover_Block:
 
   def display(self, surface: Surface, colorscheme: dict[str, int]):
     for surf in self.surfaces:
-      surf[0].set_alpha(m.T_WHITE[3])
-      surf[0].fill(m.T_WHITE)
+      surf[0].set_alpha(100)
+      surf[0].fill(colorscheme["main"])
       surface.blit(surf[0], surf[1])

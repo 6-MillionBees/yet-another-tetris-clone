@@ -20,12 +20,14 @@ ORANGE = (252, 123, 3)
 
 YELLOW = (254, 248, 76)
 
-LIME = (189, 233, 83)
+LIME = (168, 214, 56)
 GREEN = (100, 174, 61)
-LIGHT_GREEN = (126, 210, 126)
+LIGHT_GREEN = (143, 247, 109)
+DARK_GREEN = (67, 122, 0)
 
 BLUE = (81, 225, 252)
 DEEP_BLUE = (39, 85, 214)
+DARK_BLUE = (0, 22, 131)
 
 LIGHT_PINK = (248, 175, 245)
 PALE_PINK = (250, 120, 249)
@@ -38,6 +40,21 @@ SPEEDS = [
   2, 2, 2, 1
 ]
 
+MAIN_COLORS = [RED, ORANGE, YELLOW, GREEN, BLUE, PINK]
+
+base_button = {
+  "main": DARK_BLUE,
+  "out": DEEP_BLUE,
+  "text": DEEP_BLUE
+}
+
+base_button_hover = {
+  "main": DEEP_BLUE,
+  "out": WHITE,
+  "text": WHITE
+}
+
+
 colors = [
   {
     "o": YELLOW,
@@ -47,7 +64,10 @@ colors = [
     "l": ORANGE,
     "j": DEEP_BLUE,
     "t": PINK,
-    "h": T_WHITE
+    "h": T_WHITE,
+    "main": BLUE,
+    "back": DARK_BLUE,
+    "highlight": DEEP_BLUE
   }
   # {
   #   "o": LIGHT_GREEN,
@@ -57,7 +77,9 @@ colors = [
   #   "l": LIME,
   #   "j": GREEN,
   #   "t": LIGHT_GREEN,
-  #   "h": T_WHITE
+  #   "h": T_WHITE,
+  #   "main": GREEN,
+  #   "back": DARK_GREEN
   # }
 ]
 
@@ -74,7 +96,9 @@ def center_text(text: pg.Surface, rect: pg.Rect, offsets: tuple[int, int] = (0, 
 
   return text_rect
 
-mini_blocks: dict[str, list[pg.Rect]] = {
+# def shadow_text(text: pg.Surface, direction, distance):
+
+MINI_BLOCKS: dict[str, list[pg.Rect]] = {
   "": [],
   "o": [pg.Rect(10, 10 , 30, 30)],
   "i": [pg.Rect(20, 5, 10, 40)],
