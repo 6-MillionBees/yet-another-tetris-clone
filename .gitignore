@@ -1,8 +1,5 @@
+
+
 # Pycache
 __pycache__/
-*.pyc
-
-__pycache__/grid_class.cpython-312.pyc
-__pycache__/misc.cpython-312.pyc
-__pycache__/player_class.cpython-312.pyc
 *.pyc
