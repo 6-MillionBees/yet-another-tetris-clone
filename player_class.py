@@ -27,7 +27,7 @@ class Player:
 
 # |============================================================|    IMPORTANT    |============================================================|
 
-    self.alive: bool = True # self.alive it the boolian keeping the gameloop going BE CAREFUL WITH THIS ONE
+    self.alive: bool = True # self.alive is the boolian keeping the gameloop going BE CAREFUL WITH THIS ONE
 
 # |===========================================================================================================================================|
 
@@ -115,7 +115,6 @@ class Player:
       if not self.world.get_block(cord)[0]:
         continue
       self.alive = False
-      self.game_over()
 
     self.has_held = False
 
@@ -159,6 +158,12 @@ class Player:
     score_text_rect.center = (500, 400)
 
     self.surface.blit(score_text, score_text_rect)
+
+    combo_text = m.nums_font.render(str(self.combo), False, m.GREEN)
+    combo_text_rect = combo_text.get_rect()
+    combo_text_rect.center = (40, 150)
+
+    self.surface.blit(combo_text, combo_text_rect)
 
     m.outline(self.heldblock_rect, m.BLACK, 2, self.surface)
     pg.draw.rect(self.surface, self.colorscheme["back"], self.heldblock_rect)
@@ -223,7 +228,8 @@ class Player:
     score_rect = score_text.get_rect()
     score_rect.center = (300, 300)
 
-    self.surface.fill(self.colorscheme["back"])
+    quit_colors = (self.colorscheme["back"], m.BLACK)
+
     is_open = True
     while is_open:
       for event in pg.event.get():
@@ -233,15 +239,26 @@ class Player:
         if event.type == pg.MOUSEBUTTONDOWN:
           if quit_rect.collidepoint(event.pos):
             is_open = False
+        if event.type == pg.MOUSEMOTION:
+          if quit_rect.collidepoint(event.pos):
+            quit_colors = (self.colorscheme["highlight"], m.WHITE)
+            quit_text = m.small_title_font.render("Quit", False, m.WHITE)
+          else:
+            quit_colors = (self.colorscheme["back"], m.BLACK)
+            quit_text = m.small_title_font.render("Quit", False, m.DEEP_BLUE)
 
-      m.outline(quit_rect, m.BLACK, 2, self.surface)
-      pg.draw.rect(self.surface, self.colorscheme["back"], quit_rect)
+      self.surface.fill(self.colorscheme["back"])
+
+      m.outline(quit_rect, quit_colors[1], 2, self.surface)
+      pg.draw.rect(self.surface, quit_colors[0], quit_rect)
       self.surface.blit(score_text, score_rect)
       self.surface.blit(over_text, over_rect)
       self.surface.blit(quit_text, quit_text_rect)
 
       pg.display.update()
       clock.tick(60)
+
+    self.alive = False
 
 
 
@@ -319,6 +336,10 @@ class Player:
     if event.type == m.MOVEDOWN:
       self.movedown()
       self.current_block.update_rects(self.world)
+
+      if not self.alive:
+        self.game_over()
+        return
 
       # Checks if shift is pressed
       if pg.key.get_pressed()[pg.K_RSHIFT]:

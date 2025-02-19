@@ -53,7 +53,8 @@ colors = [
     "t": PINK,
     "h": T_WHITE,
     "main": BLUE,
-    "back": DARK_BLUE
+    "back": DARK_BLUE,
+    "highlight": DEEP_BLUE
   }
   # {
   #   "o": LIGHT_GREEN,
