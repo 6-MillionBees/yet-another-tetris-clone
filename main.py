@@ -7,6 +7,8 @@ import grid_class
 import player_class
 import misc as m
 
+from buttons import Button
+
 pg.init()
 
 
@@ -17,19 +19,13 @@ pg.display.set_caption("Tetris")
 
 
 def pause(player: player_class.Player):
-  unpause_rect = pg.Rect(200, 325, 200, 50)
   pause_text = m.nums_font.render("Paused", False, m.DEEP_BLUE)
+
+  unpause_button = Button(pg.Rect(200, 325, 200, 50), "Unpause", m.base_button, m.base_button_hover, m.nums_font)
+  quit_button = Button(pg.Rect(200, 400, 200, 50), "Quit", m.base_button, m.base_button_hover, m.nums_font)
 
   pause_text_rect = pause_text.get_rect()
   pause_text_rect.center = (300, 200)
-
-  unpause_text = m.nums_font.render("Unpause", False, m.DEEP_BLUE)
-  unpause_text_pos = m.center_text(unpause_text, unpause_rect)
-
-  quit_rect = pg.Rect(200, 400, 200, 50)
-  quit_text = m.nums_font.render("Quit", False, m.DEEP_BLUE)
-  quit_text_pos = m.center_text(quit_text, quit_rect)
-
 
   pg.time.set_timer(m.MOVEDOWN, 100)
 
@@ -43,24 +39,21 @@ def pause(player: player_class.Player):
         if event.key == pg.K_ESCAPE:
           is_open = False
       elif event.type == pg.MOUSEBUTTONDOWN:
-        if unpause_rect.collidepoint(event.pos):
+        if unpause_button.collidepoint(event.pos):
           is_open = False
-        elif quit_rect.collidepoint(event.pos):
+        elif quit_button.collidepoint(event.pos):
           pg.quit()
           quit()
+      elif event.type == pg.MOUSEMOTION:
+        unpause_button.hover(event.pos)
+        quit_button.hover(event.pos)
 
-    screen.fill(m.GREY)
+    screen.fill(player.colorscheme["back"])
 
     screen.blit(pause_text, pause_text_rect)
 
-    m.outline(unpause_rect, m.BLACK, 2, screen)
-    pg.draw.rect(screen, m.GREY, unpause_rect)
-
-    m.outline(quit_rect, m.BLACK, 2, screen)
-    pg.draw.rect(screen, m.GREY, quit_rect)
-
-    screen.blit(unpause_text, unpause_text_pos)
-    screen.blit(quit_text, quit_text_pos)
+    unpause_button.display(screen)
+    quit_button.display(screen)
 
 
     pg.display.update()
@@ -125,13 +118,8 @@ def game_loop():
 def main():
   running = True
 
-  start_text = m.small_title_font.render("start", False, m.BLACK)
-  start_text_rect = start_text.get_rect()
-  start_text_rect.center = (300, 325)
-
-  start_button = pg.Rect(0, 0, 200, 50)
-  start_button.center = (300, 325)
-  start_rect_colors = (m.DARK_BLUE, m.BLACK)
+  start_button = Button(pg.Rect(0, 0, 200, 50), "start", m.base_button, m.base_button_hover, m.small_title_font)
+  start_button.center((300, 325))
 
   title_surfaces: list[pg.Surface] = [
     m.title_font.render("T", False, m.RED),
@@ -165,12 +153,7 @@ def main():
           game_loop()
 
       if event.type == pg.MOUSEMOTION:
-        if start_button.collidepoint(event.pos):
-          start_text = m.small_title_font.render("start", False, m.WHITE)
-          start_rect_colors = (m.DEEP_BLUE, m.WHITE)
-        else:
-          start_text = m.small_title_font.render("start", False, m.BLACK)
-          start_rect_colors = (m.DARK_BLUE, m.BLACK)
+        start_button.hover(event.pos)
 
     screen.fill(m.DARK_BLUE)
 
@@ -178,9 +161,7 @@ def main():
     for surface, pos in title:
       screen.blit(surface, pos)
 
-    m.outline(start_button, start_rect_colors[1], 2, screen)
-    pg.draw.rect(screen, start_rect_colors[0], start_button)
-    screen.blit(start_text, start_text_rect)
+    start_button.display(screen)
 
     pg.display.flip()
 

@@ -42,6 +42,19 @@ SPEEDS = [
 
 MAIN_COLORS = [RED, ORANGE, YELLOW, GREEN, BLUE, PINK]
 
+base_button = {
+  "main": DARK_BLUE,
+  "out": DEEP_BLUE,
+  "text": DEEP_BLUE
+}
+
+base_button_hover = {
+  "main": DEEP_BLUE,
+  "out": WHITE,
+  "text": WHITE
+}
+
+
 colors = [
   {
     "o": YELLOW,
@@ -83,7 +96,7 @@ def center_text(text: pg.Surface, rect: pg.Rect, offsets: tuple[int, int] = (0, 
 
   return text_rect
 
-
+# def shadow_text(text: pg.Surface, direction, distance):
 
 MINI_BLOCKS: dict[str, list[pg.Rect]] = {
   "": [],
