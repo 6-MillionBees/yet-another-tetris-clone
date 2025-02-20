@@ -4,7 +4,7 @@
 
 import pygame as pg
 import grid_class
-import player_class
+import game_class
 import misc as m
 
 from buttons import Button
@@ -18,7 +18,7 @@ pg.display.set_caption("Tetris")
 
 
 
-def pause(player: player_class.Player):
+def pause(player: game_class.Game):
   pause_text = m.nums_font.render("Paused", False, m.DEEP_BLUE)
 
   unpause_button = Button(pg.Rect(200, 325, 200, 50), "Unpause", m.base_button, m.base_button_hover, m.nums_font)
@@ -65,14 +65,14 @@ def pause(player: player_class.Player):
 
 def game_loop():
   grid = grid_class.Grid(10, 20, (30, 30), (100, -2))
-  player = player_class.Player(grid, m.colors, screen)
+  game = game_class.Game(grid, m.colors, screen)
 
-  pg.time.set_timer(m.MOVEDOWN, player.speed, 1)
+  pg.time.set_timer(m.MOVEDOWN, game.speed, 1)
   pg.time.set_timer(m.PARTICLE_UPDATE, int(1000 / m.FPS))
 
   pause_rect = pg.Rect(550, 0, 50, 50)
 
-  while player.alive:
+  while game.alive:
 
     # Event Handling
     for event in pg.event.get():
@@ -82,29 +82,29 @@ def game_loop():
 
       # Handles the player events (most of the events)
       # See player_class.py for more info
-      player.player_events(event)
+      game.player_events(event)
 
       if event.type == pg.MOUSEBUTTONDOWN:
         if pause_rect.collidepoint(event.pos):
-          pause(player)
+          pause(game)
 
       if event.type == pg.KEYDOWN:
         if event.key == pg.K_ESCAPE:
-          pause(player)
+          pause(game)
 
     # Background
-    screen.fill(player.colorscheme["back"])
+    screen.fill(game.colorscheme["back"])
 
     # Draw grid
     grid.display(screen)
 
     # Draw game
-    player.draw_world()
-    player.draw_blocks()
+    game.draw_world()
+    game.draw_blocks()
 
     # Pause rects <3
     m.outline(pause_rect, m.BLACK, 2, screen)
-    pg.draw.rect(screen, player.colorscheme["back"], pause_rect)
+    pg.draw.rect(screen, game.colorscheme["back"], pause_rect)
 
     # Draw particles
     # for particle in player.particles:
