@@ -14,7 +14,7 @@ pg.init()
 
 clock = pg.time.Clock()
 screen = pg.display.set_mode((600, 600))
-pg.display.set_caption("Tetris")
+pg.display.set_caption("Tetris 0.5.1")
 
 
 
