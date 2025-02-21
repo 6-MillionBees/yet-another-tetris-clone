@@ -4,6 +4,7 @@
 
 
 import pygame as pg
+from buttons import Button
 from blocks import *
 from random import randint
 from grid_class import Grid
@@ -41,6 +42,7 @@ class Game:
     self.surface: pg.Surface = surface
     self.colorscheme: dict[str, tuple] = scheme[0]
 
+
     # World
     self.world: World = World((grid.columns, grid.rows))
 
@@ -60,6 +62,7 @@ class Game:
       t_Block(self.grid, self.world)
     ]
     self.nextblock: Block = None
+    self.fastdrop_safety = False
 
     self.setup()
     self.newblock()
@@ -115,7 +118,6 @@ class Game:
         t_Block(self.grid, self.world)
       ]
 
-    self.rects = [pg.Rect((self.grid.pos[0] + cordnate[0] * self.grid.sq_size[0] + 1, self.grid.pos[1] + (cordnate[1] - 2) * self.grid.sq_size[1] + 1), self.grid.sq_size) for cordnate in self.current_block.cords]
     for cord in self.current_block.cords:
       if not self.world.get_block(cord)[0]:
         continue
@@ -144,7 +146,9 @@ class Game:
 
 
 
-  def draw_blocks(self):
+  def draw_blocks(self, surface):
+    self.surface = surface
+
     self.current_block.hover_block.display(self.surface, self.colorscheme)
     self.current_block.display(self.surface, self.colorscheme)
 
@@ -152,7 +156,9 @@ class Game:
 
 
 
-  def draw_world(self):
+  def draw_world(self, surface):
+    self.surface = surface
+
     for row in self.world.blocks:
       for column in row:
         if column[0] != None:
@@ -190,6 +196,7 @@ class Game:
       temp_block.x += 25
       temp_block.y += 10
       pg.draw.rect(self.surface, self.colorscheme[self.nextblock.type], temp_block)
+
 
 
 
@@ -271,7 +278,7 @@ class Game:
     self.lines_cleared += lines
 
     if lines == 4:
-      self.score += 1200 * (self.level + 1) + self.combo * 100
+      self.score += 1200 * (self.level + 1) + (self.combo * 100 * self.level + 1)
       self.combo += 1
       if self.combo > self.max_combo:
         self.max_combo = self.combo
@@ -310,7 +317,7 @@ class Game:
     self.update_world()
     self.newblock()
     self.score += 5 * self.level
-
+    self.fastdrop_safety = True
 
 
   def level_up(self):
@@ -339,6 +346,11 @@ class Game:
 
 
     if event.type == m.MOVEDOWN:
+      if self.fastdrop_safety:
+        self.fastdrop_safety = False
+        pg.time.set_timer(m.MOVEDOWN, int(self.speed * 0.5), 1)
+        return
+
       self.movedown()
       self.current_block.update_rects(self.world)
 
@@ -350,6 +362,7 @@ class Game:
       if pg.key.get_pressed()[pg.K_RSHIFT]:
         # It's halving the amount of time it takes to move down
         # (this might cause movedown events to happen too fast) <- possible breaking point
+        # If the speed goes faster than a frame then the pieces could move twice per frame (causing things to happen)
         if self.speed < 100:
           pg.time.set_timer(m.MOVEDOWN, int(self.speed / 2), 1)
         else:
@@ -378,8 +391,66 @@ class Game:
       if event.key == pg.K_RETURN:
         self.hold()
 
+      # Debug Menu
+      if event.key == pg.K_d:
+        self.alive = self.debug_menu()
 
 
-  # def define_hoverblock(self, block: Block):
-  #   self.hover_block = copy(self.current_block)
-  #   self.hover_block.fastdrop(self.world)
+
+
+
+  def debug_menu(self):
+
+    get_player_button = Button(Rect(0, 0, 200, 100), "Player", m.base_button, m.base_button_hover, m.nums_font)
+    get_player_button.center((300, 300))
+
+    level_up_button = Button(Rect(0, 0, 50, 50), "+", m.base_button, m.base_button_hover, m.nums_font)
+    level_up_button.center((550, 475))
+
+    level_down_button = Button(Rect(0, 0, 50, 50), "-", m.base_button, m.base_button_hover, m.nums_font)
+    level_down_button.center((550, 550))
+
+    temp_clock = pg.time.Clock()
+
+    running = True
+
+    while running:
+
+      for event in pg.event.get():
+        if event.type == m.MOVEDOWN:
+          pg.time.set_timer(m.MOVEDOWN, self.speed, 1)
+
+        if event.type == pg.QUIT:
+          return False
+
+        if event.type == pg.KEYDOWN:
+          if event.key == pg.K_ESCAPE:
+            return True
+
+        if event.type == pg.MOUSEBUTTONDOWN:
+          if get_player_button.collidepoint(event.pos):
+            for item in self.__dict__.items():
+              print(item)
+          if level_up_button.collidepoint(event.pos):
+            self.level_up()
+
+          if level_down_button.collidepoint(event.pos):
+            self.level -= 2
+            self.level_up()
+
+        if event.type == pg.MOUSEMOTION:
+          get_player_button.hover(event.pos)
+          level_down_button.hover(event.pos)
+          level_up_button.hover(event.pos)
+
+      self.surface.fill(m.DARK_BLUE)
+
+      get_player_button.display(self.surface)
+      level_down_button.display(self.surface)
+      level_up_button.display(self.surface)
+
+      pg.display.flip()
+
+      temp_clock.tick(m.FPS)
+
+    return True

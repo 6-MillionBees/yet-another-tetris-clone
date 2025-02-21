@@ -12,10 +12,6 @@ from buttons import Button
 pg.init()
 
 
-clock = pg.time.Clock()
-screen = pg.display.set_mode((600, 600))
-pg.display.set_caption("Tetris 0.5.1")
-
 
 
 def pause(player: game_class.Game):
@@ -33,17 +29,19 @@ def pause(player: game_class.Game):
   while is_open:
     for event in pg.event.get():
       if event.type == pg.QUIT:
-        pg.quit()
-        quit()
+        return False
+
       if event.type == pg.KEYDOWN:
+
         if event.key == pg.K_ESCAPE:
-          is_open = False
+          return True
+
       elif event.type == pg.MOUSEBUTTONDOWN:
         if unpause_button.collidepoint(event.pos):
-          is_open = False
+          return True
+
         elif quit_button.collidepoint(event.pos):
-          pg.quit()
-          quit()
+          return False
       elif event.type == pg.MOUSEMOTION:
         unpause_button.hover(event.pos)
         quit_button.hover(event.pos)
@@ -58,6 +56,8 @@ def pause(player: game_class.Game):
 
     pg.display.update()
     clock.tick(m.FPS)
+
+  return True
 
 
 
@@ -77,8 +77,7 @@ def game_loop():
     # Event Handling
     for event in pg.event.get():
       if event.type == pg.QUIT:
-        pg.quit()
-        quit()
+        return False
 
       # Handles the player events (most of the events)
       # See player_class.py for more info
@@ -86,11 +85,11 @@ def game_loop():
 
       if event.type == pg.MOUSEBUTTONDOWN:
         if pause_rect.collidepoint(event.pos):
-          pause(game)
+          game.alive = pause(game)
 
       if event.type == pg.KEYDOWN:
         if event.key == pg.K_ESCAPE:
-          pause(game)
+          game.alive = pause(game)
 
     # Background
     screen.fill(game.colorscheme["back"])
@@ -99,8 +98,8 @@ def game_loop():
     grid.display(screen)
 
     # Draw game
-    game.draw_world()
-    game.draw_blocks()
+    game.draw_world(screen)
+    game.draw_blocks(screen)
 
     # Pause rects <3
     m.outline(pause_rect, m.BLACK, 2, screen)
@@ -113,6 +112,8 @@ def game_loop():
     pg.display.flip()
 
     clock.tick(m.FPS)
+
+  return True
 
 
 def main():
@@ -150,7 +151,7 @@ def main():
 
       if event.type == pg.MOUSEBUTTONDOWN:
         if start_button.collidepoint(event.pos):
-          game_loop()
+          running = game_loop()
 
       if event.type == pg.MOUSEMOTION:
         start_button.hover(event.pos)
@@ -169,5 +170,13 @@ def main():
 
 
 if __name__ == "__main__":
+  # Important things
+  clock = pg.time.Clock()
+  screen = pg.display.set_mode((600, 600))
+  pg.display.set_caption("Tetris 0.5.1")
+
+  # The entire game is contained within this function
   main()
+
+  # Close Pygame
   pg.quit()
