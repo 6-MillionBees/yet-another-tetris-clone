@@ -2,4 +2,5 @@
 
 # Pycache
 __pycache__/
-*.pyc
+*.pycs
+*.cpython
